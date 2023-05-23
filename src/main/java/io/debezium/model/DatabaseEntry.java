@@ -7,16 +7,12 @@ package io.debezium.model;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
-import org.jboss.logging.Logger;
 
 public class DatabaseEntry {
 
     private List<DatabaseColumnEntry> columnEntries;
     private final DatabaseTableMetadata databaseTableMetadata;
-
-    private static final Logger LOG = Logger.getLogger(DatabaseEntry.class);
 
     public DatabaseEntry(List<DatabaseColumnEntry> columnEntries, DatabaseTableMetadata databaseTableMetadata) {
         this.columnEntries = columnEntries;
@@ -47,17 +43,17 @@ public class DatabaseEntry {
         return databaseTableMetadata;
     }
 
-    public Optional<DatabaseColumnEntry> getPrimaryColumnEntry() {
-        Optional<DatabaseColumn> primaryColumn = databaseTableMetadata.getPrimary();
-        if (primaryColumn.isEmpty()) {
-            return Optional.empty();
-        }
+    /**
+     * @return DatabaseColumnEntry which is the primary in this DatabaseEntry
+     */
+    public DatabaseColumnEntry getPrimaryColumnEntry() {
+        DatabaseColumn primaryColumn = databaseTableMetadata.getPrimary();
         for (DatabaseColumnEntry columnEntry : columnEntries) {
-            if (columnEntry.columnName().equals(primaryColumn.get().getName())) {
-                return Optional.of(columnEntry);
+            if (columnEntry.columnName().equals(primaryColumn.getName())) {
+                return columnEntry;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override

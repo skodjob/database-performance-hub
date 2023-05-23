@@ -45,13 +45,16 @@ public class DatabaseTableMetadata {
         columns.add(column);
     }
 
-    public Optional<DatabaseColumn> getPrimary() {
+    /**
+     * @return primary column. Is null if it does not exist but that should not happen. It can and probably will break application.
+     */
+    public DatabaseColumn getPrimary() {
         for (DatabaseColumn column : columns) {
             if (column.isPrimary()) {
-                return Optional.of(column);
+                return column;
             }
         }
-        return Optional.empty();
+        return null;
     }
 
     @Override

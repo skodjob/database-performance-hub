@@ -11,18 +11,19 @@ import javax.inject.Inject;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.debezium.performance.dmt.utils.DmtSchemaParser;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
-import io.debezium.performance.dmt.schema.DatabaseEntry;
+import io.debezium.performance.dmt.model.DatabaseEntry;
 import io.debezium.performance.dmt.service.MainService;
-import io.debezium.performance.dmt.utils.DatabaseEntryParser;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
 
@@ -37,7 +38,7 @@ public class MainResource {
     MainService mainService;
 
     @Inject
-    DatabaseEntryParser parser;
+    DmtSchemaParser parser;
 
     @ConfigProperty(name = "onstart.reset.database", defaultValue = "false")
     boolean resetDatabase;
@@ -103,7 +104,7 @@ public class MainResource {
     }
 
     @Path("ResetDatabase")
-    @DELETE
+    @GET
     public Response resetDatabase() {
         LOG.debug("Received RESET DATABASE request");
         try {
@@ -121,5 +122,4 @@ public class MainResource {
             mainService.resetDatabase();
         }
     }
-
 }

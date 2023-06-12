@@ -68,18 +68,6 @@
       <artifactId>quarkus-mongodb-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-health</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-smallrye-fault-tolerance</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>io.quarkus</groupId>
-      <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
-    </dependency>
-    <dependency>
       <groupId>io.debezium.performance</groupId>
       <artifactId>dmt-schema</artifactId>
       <version>0.2.1-SNAPSHOT</version>

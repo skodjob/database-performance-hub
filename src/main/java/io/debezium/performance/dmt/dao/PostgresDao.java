@@ -12,7 +12,6 @@ import java.sql.Statement;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
-import org.eclipse.microprofile.faulttolerance.Retry;
 
 import io.debezium.performance.dmt.dataSource.PostgresDataSource;
 import io.debezium.performance.dmt.exception.RuntimeSQLException;
@@ -23,7 +22,6 @@ import io.quarkus.arc.lookup.LookupIfProperty;
 @RequestScoped
 @LookupIfProperty(name = "quarkus.datasource.postgresql.enabled", stringValue = "true")
 @Unremovable
-@Retry
 public final class PostgresDao extends AbstractBasicDao {
 
     @Inject

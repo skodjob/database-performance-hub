@@ -56,9 +56,6 @@ public abstract class AbstractBasicDao implements Dao {
     public void update(DatabaseEntry databaseEntry) {
         try (Connection conn = source.getConnection();
                 Statement stmt = conn.createStatement()) {
-            if (databaseEntry.getPrimaryColumnEntry() == null) {
-                throw new RuntimeException("Cannot update without primary key");
-            }
             stmt.execute(queryCreator.updateQuery(databaseEntry));
         }
         catch (Exception ex) {

@@ -11,7 +11,7 @@ import java.sql.Statement;
 import java.time.Instant;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.Dependent;
 
 import org.jboss.logging.Logger;
 
@@ -23,7 +23,7 @@ import io.debezium.performance.dmt.model.DatabaseTableMetadata;
 import io.debezium.performance.dmt.queryCreator.QueryCreator;
 
 @SuppressWarnings("CdiManagedBeanInconsistencyInspection")
-@RequestScoped
+@Dependent
 public abstract class AbstractBasicDao implements Dao {
 
     protected DataSourceWrapper source;
@@ -48,7 +48,6 @@ public abstract class AbstractBasicDao implements Dao {
         catch (SQLException ex) {
             LOG.error("Could not insert into database " + databaseEntry);
             LOG.error(ex.getMessage());
-            throw new RuntimeSQLException(ex);
         }
     }
 
@@ -61,7 +60,6 @@ public abstract class AbstractBasicDao implements Dao {
         catch (Exception ex) {
             LOG.error("Could not update database " + databaseEntry);
             LOG.error(ex.getMessage());
-            throw new RuntimeSQLException(ex);
         }
     }
 
@@ -122,6 +120,18 @@ public abstract class AbstractBasicDao implements Dao {
             LOG.error("Could not insert into database timed request" + databaseEntry);
             LOG.error(ex.getMessage());
             throw new RuntimeSQLException(ex);
+        }
+    }
+
+    @Override
+    public void executeStatement(String statement) {
+        try (Connection conn = source.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(statement);
+        }
+        catch (SQLException ex) {
+            LOG.error("Could not execute statement " + statement);
+            LOG.error(ex.getMessage());
         }
     }
 

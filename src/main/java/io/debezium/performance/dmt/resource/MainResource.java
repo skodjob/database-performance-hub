@@ -8,6 +8,7 @@ package io.debezium.performance.dmt.resource;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -18,14 +19,16 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import io.debezium.performance.dmt.service.AsyncMainService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import io.debezium.performance.dmt.model.DatabaseEntry;
 import io.debezium.performance.dmt.service.MainService;
-import io.debezium.performance.dmt.utils.DmtSchemaParser;
+import io.debezium.performance.dmt.parser.DmtSchemaJsonParser;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
+import org.jboss.resteasy.reactive.RestQuery;
 
 @Path("Main")
 @Consumes(MediaType.APPLICATION_JSON)
@@ -35,10 +38,14 @@ import io.quarkus.runtime.annotations.RegisterForReflection;
 public class MainResource {
 
     @Inject
+    @Named("main")
     MainService mainService;
 
     @Inject
-    DmtSchemaParser parser;
+    DmtSchemaJsonParser parser;
+
+    @Inject
+    AsyncMainService asyncMainService;
 
     @ConfigProperty(name = "onstart.reset.database", defaultValue = "false")
     boolean resetDatabase;
@@ -130,6 +137,18 @@ public class MainResource {
             LOG.debug("Could not do timed insert");
             return Response.noContent().status(Response.Status.INTERNAL_SERVER_ERROR).build();
         }
+    }
+
+    @Path("GenerateLoad")
+    @POST
+    public Response generateLoad(@RestQuery int count, @RestQuery int maxRows) {
+        if (count == 0|| maxRows == 0) {
+            return Response.noContent().status(Response.Status.BAD_REQUEST).build();
+        }
+        long start = System.currentTimeMillis();
+        long time = asyncMainService.generateLoad(count, maxRows);
+        long totalTime = System.currentTimeMillis() - start;
+        return Response.ok().entity("jdbc time " + time + " ms\n" + "total time " +  totalTime + " ms").build();
     }
 
     void onStart(@Observes StartupEvent ev) {

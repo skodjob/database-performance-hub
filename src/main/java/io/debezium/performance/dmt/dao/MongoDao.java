@@ -8,7 +8,7 @@ package io.debezium.performance.dmt.dao;
 import java.time.Instant;
 import java.util.List;
 
-import javax.enterprise.context.RequestScoped;
+import javax.enterprise.context.Dependent;
 import javax.inject.Inject;
 
 import org.bson.Document;
@@ -29,7 +29,7 @@ import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.lookup.LookupIfProperty;
 import io.quarkus.mongodb.MongoClientName;
 
-@RequestScoped
+@Dependent
 @LookupIfProperty(name = "quarkus.mongodb.main.enabled", stringValue = "true")
 @Unremovable
 public final class MongoDao implements Dao {
@@ -134,6 +134,10 @@ public final class MongoDao implements Dao {
             LOG.error(me.getMessage());
             throw me;
         }
+    }
+
+    @Override
+    public void executeStatement(String statement) {
     }
 
     @Override

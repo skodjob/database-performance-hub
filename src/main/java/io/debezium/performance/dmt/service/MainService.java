@@ -11,6 +11,7 @@ import java.util.function.Consumer;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
+import javax.inject.Named;
 import javax.json.JsonObject;
 
 import org.jboss.logging.Logger;
@@ -25,6 +26,7 @@ import io.debezium.performance.dmt.model.DatabaseTableMetadata;
 import io.debezium.performance.dmt.utils.TimeJsonBuilder;
 
 @RequestScoped
+@Named("main")
 public class MainService {
     @Inject
     DaoManager daoManager;

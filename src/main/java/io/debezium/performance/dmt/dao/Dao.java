@@ -30,6 +30,8 @@ public interface Dao {
 
     void executeStatement(String statement);
 
+    void executePreparedStatement(String statement);
+
     Instant timedInsert(DatabaseEntry databaseEntry);
 
 }

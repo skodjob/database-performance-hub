@@ -4,6 +4,7 @@ import io.debezium.performance.dmt.async.ExecutorPool;
 import io.debezium.performance.dmt.generator.Generator;
 import io.debezium.performance.dmt.model.DatabaseEntry;
 import io.debezium.performance.dmt.queryCreator.MysqlQueryCreator;
+import io.quarkus.runtime.Startup;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RequestScoped
+@Startup
 public class AsyncMainService extends MainService {
     @Inject
     Generator generator;

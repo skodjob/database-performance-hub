@@ -1,8 +1,6 @@
 package io.debezium.performance.dmt.async;
 
 import io.debezium.performance.dmt.dao.Dao;
-import io.debezium.performance.dmt.model.DatabaseEntry;
-import io.debezium.performance.dmt.model.QueryType;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -21,7 +19,7 @@ public class RunnableUpsert implements Runnable {
         executeToDaos(dao -> dao.executeStatement(statement));
     }
 
-    private void executeToDaos(Consumer<Dao> func) {
+    protected void executeToDaos(Consumer<Dao> func) {
         for (Dao dao : dbs) {
             func.accept(dao);
         }

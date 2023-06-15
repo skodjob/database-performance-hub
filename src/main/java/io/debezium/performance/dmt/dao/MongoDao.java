@@ -141,6 +141,11 @@ public final class MongoDao implements Dao {
     }
 
     @Override
+    public void executePreparedStatement(String statement) {
+
+    }
+
+    @Override
     public Instant timedInsert(DatabaseEntry databaseEntry) {
         try {
             MongoDatabase db = getDatabase();

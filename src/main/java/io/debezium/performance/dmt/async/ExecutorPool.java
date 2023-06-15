@@ -1,9 +1,7 @@
 package io.debezium.performance.dmt.async;
 
 import io.debezium.performance.dmt.dao.DaoManager;
-import io.debezium.performance.dmt.model.DatabaseEntry;
-import io.debezium.performance.dmt.model.QueryType;
-import io.debezium.performance.dmt.resource.MainResource;
+import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
@@ -16,6 +14,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
+@Startup
 public class ExecutorPool {
     private final ExecutorService pool;
     private final BlockingQueue<RunnableUpsert> runnableUpsertsQueue;
@@ -33,7 +32,7 @@ public class ExecutorPool {
         counter = new AtomicInteger(0);
         runnableUpsertsQueue = new ArrayBlockingQueue<>(poolSize);
         for (int i = 0; i < poolSize; i++) {
-            runnableUpsertsQueue.add(new RunnableUpsert(manager.getEnabledDbs()));
+            runnableUpsertsQueue.add(new RunnablePreparedUpsert(manager.getEnabledDbs()));
         }
     }
 

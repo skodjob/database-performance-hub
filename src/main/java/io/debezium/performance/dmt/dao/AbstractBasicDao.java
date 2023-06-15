@@ -6,6 +6,7 @@
 package io.debezium.performance.dmt.dao;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Instant;
@@ -128,6 +129,18 @@ public abstract class AbstractBasicDao implements Dao {
         try (Connection conn = source.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(statement);
+        }
+        catch (SQLException ex) {
+            LOG.error("Could not execute statement " + statement);
+            LOG.error(ex.getMessage());
+        }
+    }
+
+    @Override
+    public void executePreparedStatement(String statement) {
+        try (Connection conn = source.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(statement)) {
+            stmt.executeUpdate();
         }
         catch (SQLException ex) {
             LOG.error("Could not execute statement " + statement);

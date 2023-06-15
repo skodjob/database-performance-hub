@@ -8,7 +8,6 @@ package io.debezium.performance.dmt.resource;
 import javax.enterprise.context.ApplicationScoped;
 import javax.enterprise.event.Observes;
 import javax.inject.Inject;
-import javax.inject.Named;
 import javax.json.JsonObject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -24,7 +23,6 @@ import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import io.debezium.performance.dmt.model.DatabaseEntry;
-import io.debezium.performance.dmt.service.MainService;
 import io.debezium.performance.dmt.parser.DmtSchemaJsonParser;
 import io.quarkus.runtime.StartupEvent;
 import io.quarkus.runtime.annotations.RegisterForReflection;
@@ -38,14 +36,10 @@ import org.jboss.resteasy.reactive.RestQuery;
 public class MainResource {
 
     @Inject
-    @Named("main")
-    MainService mainService;
+    AsyncMainService mainService;
 
     @Inject
     DmtSchemaJsonParser parser;
-
-    @Inject
-    AsyncMainService asyncMainService;
 
     @ConfigProperty(name = "onstart.reset.database", defaultValue = "false")
     boolean resetDatabase;
@@ -146,9 +140,10 @@ public class MainResource {
             return Response.noContent().status(Response.Status.BAD_REQUEST).build();
         }
         long start = System.currentTimeMillis();
-        long time = asyncMainService.generateLoad(count, maxRows);
+        long time = mainService.generateLoad(count, maxRows);
         long totalTime = System.currentTimeMillis() - start;
-        return Response.ok().entity("jdbc time " + time + " ms\n" + "total time " +  totalTime + " ms").build();
+        return Response.ok().entity("jdbc last executor started " + time
+                + " ms\n" + "total time " +  totalTime + " ms").build();
     }
 
     void onStart(@Observes StartupEvent ev) {

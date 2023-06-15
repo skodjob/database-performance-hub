@@ -3,7 +3,6 @@ package io.debezium.performance.dmt.service;
 import io.debezium.performance.dmt.async.ExecutorPool;
 import io.debezium.performance.dmt.generator.Generator;
 import io.debezium.performance.dmt.model.DatabaseEntry;
-import io.debezium.performance.dmt.model.QueryType;
 import io.debezium.performance.dmt.queryCreator.MysqlQueryCreator;
 
 import javax.enterprise.context.RequestScoped;
@@ -30,7 +29,10 @@ public class AsyncMainService extends MainService {
                 statements.add(mysqlQueryCreator.insertQuery(entry));
             }
         }
+        executorPool.setRequestsCount(statements.size());
+        executorPool.restartCounter();
         long start = System.currentTimeMillis();
+        executorPool.setTimer(start);
         for (String statement: statements) {
             executorPool.execute(statement);
         }

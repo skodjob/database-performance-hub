@@ -1,14 +1,17 @@
+import os
 import pprint
 import time
 
 from pexpect import pxssh
 from collections import OrderedDict
+from dotenv import load_dotenv
 import requests
 
-HOSTNAME = ""
-USERNAME = ""
-SSH_KEY = ""
-DMT_LOCATION = ""
+load_dotenv()
+REMOTE_HOSTNAME = os.getenv("REMOTE_HOSTNAME")
+REMOTE_USERNAME = os.getenv("REMOTE_USERNAME")
+SSH_KEY = os.getenv("SSH_KEY")
+DMT_LOCATION = os.getenv("DMT_LOCATION")
 COUNT = [100, 200, 500, 1000]
 ROWS = [20, 100, 2000]
 REPETITIONS = 5
@@ -30,7 +33,7 @@ def execute_tests(counts, max_rows):
 
 def get_ssh_client():
     s = pxssh.pxssh()
-    s.login(server=HOSTNAME, username=USERNAME, ssh_key=SSH_KEY)
+    s.login(server=REMOTE_HOSTNAME, username=REMOTE_USERNAME, ssh_key=SSH_KEY)
     s.prompt()
     print("Logged in successfully")
     return s
@@ -46,7 +49,7 @@ def send_generate_request(count, max_rows):
     url = "http://{}:8080/Main/GenerateBatchLoad"
     for i in range(5):
         try:
-            response = requests.post(url.format(HOSTNAME), params=params)
+            response = requests.post(url.format(REMOTE_HOSTNAME), params=params)
         except requests.exceptions.ConnectionError:
             if i != 5:
                 print("Connection error when sending generate request, will retry")
@@ -75,7 +78,7 @@ def send_reset_database_request():
     url = "http://{}:8080/Main/ResetDatabase"
     for i in range(5):
         try:
-            response = requests.get(url.format(HOSTNAME))
+            response = requests.get(url.format(REMOTE_HOSTNAME))
         except requests.exceptions.ConnectionError:
             if i != 5:
                 print("Connection error when sending reset database request, will retry")

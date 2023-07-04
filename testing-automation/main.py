@@ -1,6 +1,7 @@
 import os
 import pprint
 import time
+import json
 
 from pexpect import pxssh
 from collections import OrderedDict
@@ -12,9 +13,27 @@ REMOTE_HOSTNAME = os.getenv("REMOTE_HOSTNAME")
 REMOTE_USERNAME = os.getenv("REMOTE_USERNAME")
 SSH_KEY = os.getenv("SSH_KEY")
 DMT_LOCATION = os.getenv("DMT_LOCATION")
-COUNT = [100, 200, 500, 1000]
-ROWS = [20, 100, 2000]
+# COUNT = [100, 200, 500, 1000]
+# ROWS = [20, 100, 2000]
+# REPETITIONS = 5
+# THREADS = [1, 5, 10, 30, 50, 100]
+COUNT = [100, 200]
+ROWS = [20, 100]
 REPETITIONS = 5
+THREADS = [1, 5, 10]
+DMT_START_WAIT_TIME = 50  # In ms. Should be aproximately how long it takes for dmt to establish one jdbc connection
+
+
+def complete_testing(ssh_client, threads, counts, max_rows):
+    total_results = OrderedDict()
+    for i in threads:
+        print("Starting tests with {} threads".format(i))
+        pid = start_dmt(ssh_client, i)
+        result = execute_tests(counts, max_rows)
+        total_results["Threads: {}".format(i)] = result
+        stop_dmt(ssh_client, pid)
+        print("Finished tests with {} threads".format(i))
+    return total_results
 
 
 def execute_tests(counts, max_rows):
@@ -68,7 +87,7 @@ def multiple_generate_requests(count, max_rows, repeat):
     for i in range(repeat):
         response = send_generate_request(count, max_rows)
         if len(best_response) == 0\
-                or best_response["last executor finished (ms)"] > response["last executor finished (ms)"]:
+                or best_response["lef"] > response["lef"]:
             best_response = response
     return best_response
 
@@ -92,16 +111,49 @@ def send_reset_database_request():
         raise Exception("Error when restarting database")
 
 
-def start_dmt(ssh_client):
+def start_dmt(ssh_client, threads):
+    set_executors_and_connections(ssh_client, threads)
     start_command = "java -jar {}/target/quarkus-app/quarkus-run.jar &"
     ssh_client.sendline(start_command.format(DMT_LOCATION))
     ssh_client.prompt()
     ssh_client.sendline("echo $!")
     ssh_client.prompt()
-    __pid = ssh_client.before.decode('UTF-8').splitlines()[1]
-    print("Starting dmt with pid " + __pid)
-    time.sleep(5)
+    print(ssh_client.before.decode('UTF-8'))
+    __pid = ssh_client.before.decode('UTF-8').splitlines()[-1]
+    time.sleep(DMT_START_WAIT_TIME/1000*threads + 1)
+    # Waits 1 second and then milliseconds specified in DMT_START_WAIT_TIME per connection
     return __pid
+
+
+def set_executor_size(ssh_client, exec_size):
+    ssh_client.sendline("export EXECUTOR_SIZE={}".format(exec_size))
+    ssh_client.prompt()
+
+
+def set_min_jdbc_connections(ssh_client, connections):
+    ssh_client.sendline("export QUARKUS_DATASOURCE_MYSQL_JDBC_MIN_SIZE={}".format(connections))
+    ssh_client.prompt()
+
+
+def set_max_jdbc_connections(ssh_client, connections):
+    ssh_client.sendline("export QUARKUS_DATASOURCE_MYSQL_JDBC_MAX_SIZE={}".format(connections))
+    ssh_client.prompt()
+
+
+def set_init_jdbc_connections(ssh_client, connections):
+    ssh_client.sendline("export QUARKUS_DATASOURCE_MYSQL_JDBC_INITIAL_SIZE={}".format(connections))
+    ssh_client.prompt()
+
+
+def set_exact_jdbc_connections(ssh_client, connections):
+    set_min_jdbc_connections(ssh_client, connections)
+    set_max_jdbc_connections(ssh_client, connections)
+    set_init_jdbc_connections(ssh_client, connections)
+
+
+def set_executors_and_connections(ssh_client, count):
+    set_exact_jdbc_connections(ssh_client, count)
+    set_executor_size(ssh_client, count)
 
 
 def stop_dmt(ssh_client, process):
@@ -121,10 +173,8 @@ def rename_response(response):
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     client = get_ssh_client()
-    pid = start_dmt(client)
-    results = execute_tests(COUNT, ROWS)
-    pprint.pprint(results)
-    stop_dmt(client, pid)
+    results = complete_testing(client, THREADS, COUNT, ROWS)
+    pprint.pprint(json.dumps(results))
 
 
 

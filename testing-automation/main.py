@@ -13,6 +13,7 @@ REMOTE_HOSTNAME = os.getenv("REMOTE_HOSTNAME")
 REMOTE_USERNAME = os.getenv("REMOTE_USERNAME")
 SSH_KEY = os.getenv("SSH_KEY")
 DMT_LOCATION = os.getenv("DMT_LOCATION")
+OUTPUT_FILE = os.getenv("OUTPUT_FILE")
 # COUNT = [100, 200, 500, 1000]
 # ROWS = [20, 100, 2000]
 # REPETITIONS = 5
@@ -118,7 +119,6 @@ def start_dmt(ssh_client, threads):
     ssh_client.prompt()
     ssh_client.sendline("echo $!")
     ssh_client.prompt()
-    print(ssh_client.before.decode('UTF-8'))
     __pid = ssh_client.before.decode('UTF-8').splitlines()[-1]
     time.sleep(DMT_START_WAIT_TIME/1000*threads + 1)
     # Waits 1 second and then milliseconds specified in DMT_START_WAIT_TIME per connection
@@ -160,7 +160,7 @@ def stop_dmt(ssh_client, process):
     kill_command = "kill -INT {}"
     ssh_client.sendline(kill_command.format(process))
     ssh_client.prompt()
-    print("stopped dmt")
+    print("Stopped dmt")
 
 
 def rename_response(response):
@@ -175,6 +175,8 @@ if __name__ == '__main__':
     client = get_ssh_client()
     results = complete_testing(client, THREADS, COUNT, ROWS)
     pprint.pprint(json.dumps(results))
+    with open(OUTPUT_FILE, 'w') as f:
+        print(json.dumps(results), file=f)
 
 
 

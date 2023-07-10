@@ -1,0 +1,45 @@
+---
+- hosts: mysql
+  tasks: 
+    - name: Install mysql-server
+      become: true
+      dnf:
+        name: mysql-server
+
+    - name: Start mysql
+      become: true
+      systemd:
+        name: mysqld
+        state: started
+        enabled: true
+      ignore_errors: "{{ ansible_check_mode }}"
+    
+    - name: Create mysql home directory
+      become: true
+      file:
+        path: /home/mysql
+        state: directory
+        owner: mysql
+        group: mysql
+        mode: '755'
+        recurse: true
+
+    - name: Change selinux context
+      become: true
+      community.general.sefcontext:
+        target: '/home/mysql(/.*)?'
+        setype: mysqld_db_t
+
+    - name: Apply selinux context
+      become: true
+      command: restorecon -Rv /home/mysql/
+
+    - name: Increase file descriptors limit
+      become: true
+      community.general.pam_limits:
+        value: 4096
+        limit_type: '-'
+        domain: '*'
+        limit_item: "nofile"
+
+       

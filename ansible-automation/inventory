@@ -1,0 +1,5 @@
+[dbservers]
+mysql ansible_host= ansible_user= 
+
+[dmts]
+dmt ansible_host= ansible_user=

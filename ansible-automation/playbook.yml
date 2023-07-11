@@ -1,5 +1,6 @@
 ---
 - hosts: mysql
+  name: Installing mysql on first machine
   tasks: 
     - name: Install mysql-server
       become: true
@@ -41,5 +42,66 @@
         limit_type: '-'
         domain: '*'
         limit_item: "nofile"
+
+    - name: Copy the mysql conf file
+      become: true
+      copy: 
+        dest: /etc/my.cnf
+        src: my.cnf
+      
+    - name: Start mysql
+      become: true
+      systemd:
+        name: mysqld
+        state: restarted
+        enabled: true
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - name: Create socket symlink
+      file: 
+        state: link
+        force: true
+        src: /home/mysql/mysql.sock
+        dest: /var/lib/mysql/mysql.sock
+    
+    # - name: Do mysql secure installation
+    #   become: true
+    #   expect:
+    #     command: mysql_secure_installation
+    #     responses:
+    #       'Enter current password for root': ''
+    #       'Set root password': 'n'
+    #       'Remove anonymous users': 'n'
+    #       'Disallow root login remotely': 'n'
+    #       'Remove test database': 'y'
+    #       'Reload privilege tables now': 'y'
+    #     timeout: 1
+    #   register: secure_mysql
+    #   failed_when: "'... Failed!' in secure_mysql.stdout_lines"
+    #   no_log: true
+
+    - name: Install Pymysql - python mysql client
+      become: true
+      dnf:
+        name: python3-pymysql
+
+    - name: Do mysql secure installation
+      mysql_secure_installation:
+        login_password: ''
+        new_password: "{{ db_password }}"
+        user: root
+        login_host: localhost
+        change_root_password: true
+        remove_anonymous_user: false
+        disallow_root_login_remotely: false
+        remove_test_db: true
+      register: mysql_secure
+      ignore_errors: "{{ ansible_check_mode }}"
+
+    - debug:
+        var: mysql_secure
+
+
+        
 
        

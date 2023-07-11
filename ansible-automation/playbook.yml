@@ -49,59 +49,65 @@
         dest: /etc/my.cnf
         src: my.cnf
       
-    - name: Start mysql
+    - name: Restart mysql
       become: true
       systemd:
         name: mysqld
         state: restarted
-        enabled: true
       ignore_errors: "{{ ansible_check_mode }}"
 
     - name: Create socket symlink
+      become: true
       file: 
         state: link
         force: true
         src: /home/mysql/mysql.sock
         dest: /var/lib/mysql/mysql.sock
-    
-    # - name: Do mysql secure installation
-    #   become: true
-    #   expect:
-    #     command: mysql_secure_installation
-    #     responses:
-    #       'Enter current password for root': ''
-    #       'Set root password': 'n'
-    #       'Remove anonymous users': 'n'
-    #       'Disallow root login remotely': 'n'
-    #       'Remove test database': 'y'
-    #       'Reload privilege tables now': 'y'
-    #     timeout: 1
-    #   register: secure_mysql
-    #   failed_when: "'... Failed!' in secure_mysql.stdout_lines"
-    #   no_log: true
 
-    - name: Install Pymysql - python mysql client
+    - name: Set mysql root password
       become: true
-      dnf:
-        name: python3-pymysql
-
-    - name: Do mysql secure installation
-      mysql_secure_installation:
+      community.mysql.mysql_user:
+        login_user: 'root'
         login_password: ''
-        new_password: "{{ db_password }}"
-        user: root
-        login_host: localhost
-        change_root_password: true
-        remove_anonymous_user: false
-        disallow_root_login_remotely: false
-        remove_test_db: true
-      register: mysql_secure
+        name: 'root'
+        password: "{{ db_password }}"
+        state: present
+      
+    - name: Fix remote root access
+      community.mysql.mysql_query:
+        login_user: 'root'
+        login_password: "{{ db_password }}"
+        query:
+        - GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost'
+        - UPDATE mysql.user SET host='%' WHERE user='root'
+
+    - name: Restart mysql
+      become: true
+      systemd:
+        name: mysqld
+        state: restarted
       ignore_errors: "{{ ansible_check_mode }}"
 
-    - debug:
-        var: mysql_secure
+    - name: Create testing database
+      community.mysql.mysql_query:
+        login_user: 'root'
+        login_password: "{{ db_password }}"
+        query:
+        - CREATE DATABASE IF NOT EXISTS {{ testing_database }};
 
-
+    - name: Install tuned 
+      become: true
+      dnf:
+        name: tuned
+    
+    - name: Start tuned 
+      become: true
+      systemd:
+        name: tuned
+        state: started
+        enabled: true
+    
+    - name: Set throughput-performance profile on tuned
+      become: true
+      command: tuned-adm profile throughput-performance
         
-
-       

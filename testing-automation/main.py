@@ -23,6 +23,7 @@ ROWS = [20, 100]
 REPETITIONS = 5
 THREADS = [1, 5, 10]
 DMT_START_WAIT_TIME = 50  # In ms. Should be aproximately how long it takes for dmt to establish one jdbc connection
+HEAP_SIZE = "50G"
 
 
 def complete_testing(ssh_client, threads, counts, max_rows):
@@ -114,8 +115,8 @@ def send_reset_database_request():
 
 def start_dmt(ssh_client, threads):
     set_executors_and_connections(ssh_client, threads)
-    start_command = "java -jar {}/target/quarkus-app/quarkus-run.jar &"
-    ssh_client.sendline(start_command.format(DMT_LOCATION))
+    start_command = "java -jar -Xms{} {}/target/quarkus-app/quarkus-run.jar &"
+    ssh_client.sendline(start_command.format(DMT_LOCATION, HEAP_SIZE))
     ssh_client.prompt()
     ssh_client.sendline("echo $!")
     ssh_client.prompt()

@@ -1,6 +1,6 @@
 ---
 - hosts: mysql
-  name: Installing mysql on first machine
+  name: Deploying mysql server
   tasks: 
     - name: Install mysql-server
       become: true

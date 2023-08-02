@@ -77,6 +77,7 @@ def send_generate_request(count, max_rows):
                 time.sleep(5)
                 continue
             raise
+        break
     # print("Results for count: {} and max rows: {}".format(count, max_rows))
     # print(response.json()["last executor started (ms)"])
     # print(response.json()["last executor finished (ms)"])

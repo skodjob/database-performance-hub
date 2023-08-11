@@ -27,6 +27,7 @@ git_username=
 git_token=
 
 [netdataParent:vars]
+# One metric generates 1 byte of data per second. We have about 9000 metrics enabled.
+# If this variable is not defined, Ansible will configure Netdata to use half of availiable disk space on Parent node.
+# This variable is in MB
 dbengine_multihost_disk_space=8192
-
-

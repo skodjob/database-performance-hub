@@ -25,6 +25,11 @@
   become_method: sudo
 
   tasks:
+  - name: Calculate disk space used for dbengine data
+    set_fact:
+        dbengine_multihost_disk_space: "{{ (ansible_mounts[0].size_available*0.5/1024/1024)| int }}"
+    when: dbengine_multihost_disk_space is undefined
+
   - name: Copy netdata configuration
     template:
       src: ../templates/netdata_parent.conf.j2

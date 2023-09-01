@@ -14,14 +14,13 @@ import org.jboss.logging.Logger;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import io.debezium.performance.dmt.model.DatabaseEntry;
-import io.debezium.performance.dmt.service.MainService;
 
 import static io.debezium.performance.dmt.parser.ParseUtils.fromSchema;
 
 @ApplicationScoped
 public class DmtSchemaJsonParser implements DataParser<DatabaseEntry, JsonObject> {
 
-    private static final Logger LOG = Logger.getLogger(MainService.class);
+    private static final Logger LOG = Logger.getLogger(DmtSchemaJsonParser.class);
 
     ObjectMapper objectMapper = new ObjectMapper();
 

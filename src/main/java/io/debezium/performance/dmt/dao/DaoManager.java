@@ -18,7 +18,6 @@ import javax.inject.Singleton;
 @Singleton
 public final class DaoManager {
     List<Dao> enabledDbs;
-    List<Instance<Dao>> enabledDbsInstances;
 
     @Inject
     Instance<MysqlDao> mysql;

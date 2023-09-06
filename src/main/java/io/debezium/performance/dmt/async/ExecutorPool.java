@@ -4,7 +4,6 @@ import io.debezium.performance.dmt.dao.DaoManager;
 import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
-import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
@@ -14,17 +13,14 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @ApplicationScoped
 @Startup
 public class ExecutorPool {
     private final ExecutorService pool;
     private final BlockingQueue<RunnableUpsert> runnableUpsertsQueue;
-
     private final BlockingQueue<RunnableBatchUpsert> runnableBatchUpsertsQueue;
     private CountDownLatch latch;
-    private static final Logger LOG = Logger.getLogger(ExecutorPool.class);
 
 
     @Inject
@@ -47,19 +43,15 @@ public class ExecutorPool {
         } catch (InterruptedException e) {
             return;
         }
-//        LOG.info("Taken task");
         pool.submit(() -> {
             task.setSqlQuery(sqlQuery);
-//            LOG.info("Set sqlQuery");
             task.run();
-//            LOG.info("Finished task");
             try {
                 runnableUpsertsQueue.put(task);
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
             latch.countDown();
-//            LOG.info("Returned runnable");
         });
     }
 

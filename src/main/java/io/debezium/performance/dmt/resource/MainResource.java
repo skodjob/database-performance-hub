@@ -145,9 +145,6 @@ public class MainResource {
         long start = System.currentTimeMillis();
         long[] time = mainService.generateLoad(count, maxRows);
         long totalTime = System.currentTimeMillis() - start;
-//        return Response.ok().entity("last executor started " + time[0] + " ms\n" +
-//                "last executor finished " + time[1] + " ms\n" +
-//                "total time " +  totalTime + " ms").build();
         return generateLoadJsonResponse(totalTime, time[0], time[1]);
     }
 
@@ -161,9 +158,6 @@ public class MainResource {
         long start = System.currentTimeMillis();
         long[] time = mainService.generateBatchLoad(count, maxRows);
         long totalTime = System.currentTimeMillis() - start;
-//        return Response.ok().entity("last executor started " + time[0] + " ms\n" +
-//                "last executor finished " + time[1] + " ms\n" +
-//                "total time " +  totalTime + " ms").build();
         return generateLoadJsonResponse(totalTime, time[0], time[1]);
     }
 

@@ -1,10 +1,14 @@
 package io.debezium.performance.dmt.service;
 
+import com.mongodb.client.model.WriteModel;
 import io.debezium.performance.dmt.async.ExecutorPool;
+import io.debezium.performance.dmt.dao.MongoDao;
 import io.debezium.performance.dmt.generator.Generator;
 import io.debezium.performance.dmt.model.DatabaseEntry;
+import io.debezium.performance.dmt.queryCreator.MongoBsonCreator;
 import io.debezium.performance.dmt.queryCreator.MysqlQueryCreator;
 import io.quarkus.runtime.Startup;
+import org.bson.Document;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -20,18 +24,21 @@ public class AsyncMainService extends MainService {
     ExecutorPool executorPool;
     @Inject
     MysqlQueryCreator mysqlQueryCreator;
-    public long[] generateLoad(int count, int maxRows) {
-        List<String> statements = generateQueries(count, maxRows);
+    @Inject
+    MongoBsonCreator mongoBsonCreator;
+
+    public long[] createAndExecuteLoad(int count, int maxRows) {
+        List<String> statements = generateAviationSqlQueries(count, maxRows);
         executorPool.setCountDownLatch(statements.size());
         long start = System.currentTimeMillis();
         for (String statement: statements) {
-            executorPool.execute(statement);
+            executorPool.executeFunction(dao -> dao.executePreparedStatement(statement));
         }
         return waitForLastTask(start);
     }
 
-    public long[] generateBatchLoad(int count, int maxRows) {
-        List<String> queries = generateQueries(count,maxRows);
+    public long[] createAndExecuteBatchLoad(int count, int maxRows) {
+        List<String> queries = generateAviationSqlQueries(count, maxRows);
         int poolSize = executorPool.getPoolSize();
         int batchSize = queries.size() / poolSize;
         List<List<String>> batches = new ArrayList<>();
@@ -41,9 +48,22 @@ public class AsyncMainService extends MainService {
         executorPool.setCountDownLatch(batches.size());
         long start = System.currentTimeMillis();
         for (List<String> batch: batches) {
-            executorPool.executeBatch(batch);
+            executorPool.executeFunction(dao -> dao.executeBatchStatement(batch));
         }
         return waitForLastTask(start);
+    }
+
+    public long createAndExecuteSizedMongoLoad(int count, int maxRows, int messageSize) {
+        MongoDao mongo = daoManager.getMongoDao();
+        if (mongo == null) {
+            throw new RuntimeException("Missing Mongo database.");
+        }
+        String collection = generator.generateByteBatch(1,1,1).get(0).getDatabaseTableMetadata().getName();
+        List<WriteModel<Document>> bulkOperations = generateSizedMongoBulk(count, maxRows, messageSize);
+        long start = System.currentTimeMillis();
+        mongo.bulkWrite(bulkOperations, collection);
+        long end = System.currentTimeMillis();
+        return end - start;
     }
 
     private long[] waitForLastTask(long start) {
@@ -58,8 +78,8 @@ public class AsyncMainService extends MainService {
         return new long[] {lastThreadExecuted, lastThreadFinished};
     }
 
-    private List<String> generateQueries(int count, int maxRows) {
-        List<DatabaseEntry> entries = generator.generateBatch(count, maxRows);
+    private List<String> generateAviationSqlQueries(int count, int maxRows) {
+        List<DatabaseEntry> entries = generator.generateAviationBatch(count, maxRows);
         createTable(entries.get(0));
         List<String> queries = new ArrayList<>();
         for (DatabaseEntry entry: entries) {
@@ -70,6 +90,15 @@ public class AsyncMainService extends MainService {
             }
         }
         return queries;
+    }
+
+    private List<WriteModel<Document>> generateSizedMongoBulk(int count, int maxRows, int messageSize) {
+        List<DatabaseEntry> entries = generator.generateByteBatch(count, maxRows, messageSize);
+        createTable(entries.get(0));
+        for (DatabaseEntry entry: entries) {
+            database.upsertEntry(entry);
+        }
+        return mongoBsonCreator.bulkUpdateBson(entries);
     }
 
 }

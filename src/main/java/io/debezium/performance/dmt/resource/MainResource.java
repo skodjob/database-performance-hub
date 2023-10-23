@@ -19,6 +19,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import io.debezium.performance.dmt.schema.LoadResult;
 import io.debezium.performance.dmt.service.AsyncMainService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
@@ -184,9 +186,11 @@ public class MainResource {
     }
 
     private Response generateLoadJsonResponse(long totalTime, long lastExecStart, long lastExecFinish) {
-        JsonObject json = Json.createObjectBuilder().add("last executor started (ms)", lastExecStart)
-                .add("last executor finished (ms)", lastExecFinish)
-                .add("total time (ms)", totalTime).build();
-         return Response.ok().type(MediaType.APPLICATION_JSON).entity(json.toString()).build();
+        LoadResult loadResult = new LoadResult(totalTime, lastExecStart, lastExecFinish);
+        try {
+            return Response.ok().type(MediaType.APPLICATION_JSON).entity(loadResult.toJsonString()).build();
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

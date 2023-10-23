@@ -82,7 +82,7 @@ def send_generate_request(count, max_rows):
     # print(response.json()["last executor started (ms)"])
     # print(response.json()["last executor finished (ms)"])
     # print(response.json()["total time (ms)"])
-    return rename_response(response.json())
+    return response.json()
 
 
 def multiple_generate_requests(count, max_rows, repeat):
@@ -165,13 +165,6 @@ def stop_dmt(ssh_client, process):
     ssh_client.sendline(kill_command.format(process))
     ssh_client.prompt()
     print("Stopped dmt")
-
-
-def rename_response(response):
-    response["lef"] = response.pop("last executor finished (ms)")
-    response["les"] = response.pop("last executor started (ms)")
-    response["tt"] = response.pop("total time (ms)")
-    return response
 
 
 # Press the green button in the gutter to run the script.

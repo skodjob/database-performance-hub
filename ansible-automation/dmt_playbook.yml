@@ -24,7 +24,7 @@
         gpgkey: "file:///etc/pki/rpm-gpg/RPM-GPG-KEY-centosofficial"
       when: ansible_facts["distribution"] == "CentOS" and ansible_facts["distribution_major_version"] | int < 9
 
-      - name: Set dnf baseos repository url to vault
+    - name: Set dnf baseos repository url to vault
       become: true
       yum_repository:
         baseurl: "http://vault.centos.org/$contentdir/$releasever/extras/$basearch/os/"
@@ -83,7 +83,7 @@
       replace:
         path: "~/database-manipulation-tool/src/main/resources/application.properties"
         regexp: '^quarkus.datasource.mysql.jdbc.enabled=.*$'
-        replace: "quarkus.datasource.mysql.jdbc.enabled=true"
+        replace: "quarkus.datasource.mysql.enabled=true"
       when: hostvars['mysql'].ansible_host != ""
 
     - name: Create jdbc connection string to mongo

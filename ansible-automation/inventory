@@ -1,5 +1,6 @@
 [dbservers]
 mysql ansible_host= ansible_user=
+mongo ansible_host= ansible_user=
 
 [dmts]
 dmt ansible_host= ansible_user= 
@@ -16,6 +17,7 @@ netdata
 netdataParent
 
 [all:vars]
+db_user=
 db_password=
 testing_database=
 netdata_api_key=

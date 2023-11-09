@@ -9,6 +9,7 @@ import io.debezium.performance.dmt.queryCreator.MongoBsonCreator;
 import io.debezium.performance.dmt.queryCreator.MysqlQueryCreator;
 import io.quarkus.runtime.Startup;
 import org.bson.Document;
+import org.jboss.logging.Logger;
 
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestScoped
 @Startup
 public class AsyncMainService extends MainService {
+    private static final Logger LOG = Logger.getLogger(AsyncMainService.class);
     @Inject
     Generator generator;
     @Inject
@@ -60,6 +62,7 @@ public class AsyncMainService extends MainService {
         }
         String collection = generator.generateByteBatch(1,1,1).get(0).getDatabaseTableMetadata().getName();
         List<WriteModel<Document>> bulkOperations = generateSizedMongoBulk(count, maxRows, messageSize);
+        LOG.info("Finished generating loaf generation. Beginning execution.");
         long start = System.currentTimeMillis();
         mongo.bulkWrite(bulkOperations, collection);
         long end = System.currentTimeMillis();

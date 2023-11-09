@@ -9,6 +9,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+import javax.enterprise.context.Dependent;
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 
@@ -19,7 +20,7 @@ import io.debezium.performance.dmt.queryCreator.PostgresQueryCreator;
 import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.lookup.LookupIfProperty;
 
-@RequestScoped
+@Dependent
 @LookupIfProperty(name = "quarkus.datasource.postgresql.enabled", stringValue = "true")
 @Unremovable
 public final class PostgresDao extends AbstractBasicDao {

@@ -19,7 +19,6 @@ import org.jboss.logging.Logger;
 
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoDatabase;
-import com.mongodb.client.model.Filters;
 
 import io.debezium.performance.dmt.model.DatabaseColumn;
 import io.debezium.performance.dmt.model.DatabaseColumnEntry;

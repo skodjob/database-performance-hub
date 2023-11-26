@@ -66,6 +66,25 @@ public class AsyncMainService extends MainService {
         return end - start;
     }
 
+    public long[] createAndExecuteSizedMongoLoadParallel(int count, int maxRows, int messageSize) {
+        String collection = generator.generateByteBatch(1,1,1).get(0).getDatabaseTableMetadata().getName();
+        List<WriteModel<Document>> bulkOperations = generateSizedMongoBulk(count, maxRows, messageSize);
+        int poolSize = executorPool.getPoolSize();
+        int batchSize = bulkOperations.size() / poolSize;
+        List<List<WriteModel<Document>>> batches = new ArrayList<>();
+        for (int i = 0; i < bulkOperations.size(); i += batchSize) {
+            batches.add(bulkOperations.subList(i, Math.min(i + batchSize, bulkOperations.size())));
+        }
+        executorPool.setCountDownLatch(batches.size());
+        long start = System.currentTimeMillis();
+        for (List<WriteModel<Document>> batch: batches) {
+            executorPool.executeMongoFunction(dao -> dao.bulkWrite(batch, collection));
+        }
+        return waitForLastTask(start);
+    }
+
+
+
     private long[] waitForLastTask(long start) {
         long lastThreadExecuted = System.currentTimeMillis() - start;
         long lastThreadFinished;

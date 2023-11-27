@@ -5,7 +5,7 @@
  */
 package io.skodjob.dmt.parser;
 
-import javax.json.JsonException;
+import jakarta.json.JsonException;
 
 public interface DataParser<T, E> {
     T parse(E inputObject) throws JsonException;

@@ -12,7 +12,7 @@ import java.sql.Statement;
 import java.time.Instant;
 import java.util.List;
 
-import javax.enterprise.context.Dependent;
+import jakarta.enterprise.context.Dependent;
 
 import io.skodjob.dmt.exception.RuntimeSQLException;
 import org.jboss.logging.Logger;

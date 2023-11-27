@@ -5,7 +5,7 @@
  */
 package io.skodjob.dmt.queryCreator;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import org.jboss.logging.Logger;
 

@@ -65,7 +65,7 @@ public class AsyncMainService extends MainService {
         int maxId = rowBatchSize;
         for (int i = 0; i < count; i += batchSize) {
             List<String> queries = generateSizedCustomRowBatch(batchSize, minId, maxId, messageSize);
-            batches.add(queries.subList(i, Math.min(i + batchSize, count)));
+            batches.add(queries);
             minId = maxId;
             maxId = maxId + rowBatchSize;
         }

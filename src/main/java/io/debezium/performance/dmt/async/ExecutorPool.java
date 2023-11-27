@@ -2,6 +2,7 @@ package io.debezium.performance.dmt.async;
 
 import io.debezium.performance.dmt.dao.Dao;
 import io.debezium.performance.dmt.dao.DaoManager;
+import io.debezium.performance.dmt.dao.MongoDao;
 import io.quarkus.runtime.Startup;
 import org.eclipse.microprofile.config.ConfigProvider;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -51,6 +52,24 @@ public class ExecutorPool {
         }
         pool.submit(() -> {
             task.setDaoFunctionAndExecute(daoFunction);
+            try {
+                runnableUpsertSecondQueue.put(task);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+            latch.countDown();
+        });
+    }
+
+    public void executeMongoFunction(Consumer<MongoDao> daoFunction) {
+        RunnableUpsertSecond task;
+        try {
+            task = runnableUpsertSecondQueue.take();
+        } catch (InterruptedException e) {
+            return;
+        }
+        pool.submit(() -> {
+            task.executeMongoFunction(daoFunction);
             try {
                 runnableUpsertSecondQueue.put(task);
             } catch (InterruptedException e) {

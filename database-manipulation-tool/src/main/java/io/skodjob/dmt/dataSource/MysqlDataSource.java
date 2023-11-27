@@ -8,8 +8,8 @@ package io.skodjob.dmt.dataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-import javax.enterprise.context.Dependent;
-import javax.inject.Inject;
+import jakarta.enterprise.context.Dependent;
+import jakarta.inject.Inject;
 
 import io.agroal.api.AgroalDataSource;
 import io.quarkus.agroal.DataSource;

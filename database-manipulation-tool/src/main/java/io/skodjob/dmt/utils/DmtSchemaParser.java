@@ -8,9 +8,9 @@ package io.skodjob.dmt.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.json.JsonException;
-import javax.json.JsonObject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.json.JsonException;
+import jakarta.json.JsonObject;
 
 import io.skodjob.dmt.model.DatabaseColumnEntry;
 import org.jboss.logging.Logger;

@@ -7,8 +7,8 @@ import io.skodjob.load.data.builder.ByteDataBuilder;
 import io.skodjob.load.data.builder.RequestBuilder;
 import io.skodjob.load.scenarios.builder.ConstantScenarioBuilder;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 

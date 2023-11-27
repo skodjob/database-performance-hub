@@ -9,10 +9,10 @@ import java.time.Instant;
 import java.util.List;
 import java.util.function.Consumer;
 
-import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
-import javax.inject.Named;
-import javax.json.JsonObject;
+import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
+import jakarta.inject.Named;
+import jakarta.json.JsonObject;
 
 import org.jboss.logging.Logger;
 

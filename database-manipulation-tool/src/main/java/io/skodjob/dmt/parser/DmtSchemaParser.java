@@ -3,7 +3,7 @@ package io.skodjob.dmt.parser;
 
 import io.skodjob.dmt.model.DatabaseEntry;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 @ApplicationScoped
 public class DmtSchemaParser implements DataParser<DatabaseEntry, io.skodjob.dmt.schema.DatabaseEntry>{

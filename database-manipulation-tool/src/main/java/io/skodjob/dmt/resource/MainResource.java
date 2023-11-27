@@ -191,6 +191,20 @@ public class MainResource {
         return generateLoadJsonResponse(totalTime, time[0], time[1]);
     }
 
+    @Path("GenerateSizedBatchLoad")
+    @Consumes()
+    @POST
+    public Response generateBatchLoad(@RestQuery int count, @RestQuery int maxRows, @RestQuery int messageSize) {
+        LOG.debug("Received generate load and use batch request with custom message size request");
+        if (count == 0|| maxRows == 0) {
+            return Response.noContent().status(Response.Status.BAD_REQUEST).build();
+        }
+        long start = System.currentTimeMillis();
+        long[] time = mainService.createAndExecuteSizedBatchLoad(count, maxRows, messageSize);
+        long totalTime = System.currentTimeMillis() - start;
+        return generateLoadJsonResponse(totalTime, time[0], time[1]);
+    }
+
     void onStart(@Observes StartupEvent ev) {
         if (resetDatabase) {
             LOG.info("Restarting database on startup");

@@ -55,6 +55,28 @@ public class AsyncMainService extends MainService {
         return waitForLastTask(start);
     }
 
+    public long[] createAndExecuteSizedBatchLoad(int count, int maxRows, int messageSize) {
+        int poolSize = executorPool.getPoolSize();
+        int batchSize = count / poolSize;
+        int rowBatchSize = maxRows / poolSize;
+//        List<String> queries = generateAviationSqlQueries(count, maxRows);
+        List<List<String>> batches = new ArrayList<>();
+        int minId = 0;
+        int maxId = rowBatchSize;
+        for (int i = 0; i < count; i += batchSize) {
+            List<String> queries = generateSizedCustomRowBatch(batchSize, minId, maxId, messageSize);
+            batches.add(queries.subList(i, Math.min(i + batchSize, count)));
+            minId = maxId;
+            maxId = maxId + rowBatchSize;
+        }
+        executorPool.setCountDownLatch(batches.size());
+        long start = System.currentTimeMillis();
+        for (List<String> batch: batches) {
+            executorPool.executeFunction(dao -> dao.executeBatchStatement(batch));
+        }
+        return waitForLastTask(start);
+    }
+
     public long createAndExecuteSizedMongoLoad(int count, int maxRows, int messageSize) {
         MongoDao mongo = daoManager.getMongoDao();
         if (mongo == null) {
@@ -102,6 +124,14 @@ public class AsyncMainService extends MainService {
 
     private List<String> generateAviationSqlQueries(int count, int maxRows) {
         List<DatabaseEntry> entries = generator.generateAviationBatch(count, maxRows);
+        return checkInnerGetQueries(entries);
+    }
+    private List<String> generateSizedCustomRowBatch(int count, int minId, int maxId, int messageSize) {
+        List<DatabaseEntry> entries = generator.generateCustomRowsByteBatch(count, minId, maxId, messageSize);
+        return checkInnerGetQueries(entries);
+    }
+
+    private List<String> checkInnerGetQueries(List<DatabaseEntry> entries) {
         createTable(entries.get(0));
         List<String> queries = new ArrayList<>();
         for (DatabaseEntry entry: entries) {

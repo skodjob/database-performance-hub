@@ -39,7 +39,7 @@ public abstract class DataBuilder {
         return this;
     }
 
-    List<DatabaseEntry> build() {
+    public List<DatabaseEntry> build() {
         return this.requests;
     }
 

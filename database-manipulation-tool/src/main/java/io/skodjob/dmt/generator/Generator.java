@@ -5,6 +5,9 @@ import io.skodjob.dmt.model.DatabaseEntry;
 import io.skodjob.load.data.builder.AviationDataBuilder;
 import io.skodjob.load.data.builder.ByteDataBuilder;
 import io.skodjob.load.data.builder.RequestBuilder;
+import io.skodjob.load.data.builder.custom.rows.CustomRowsByteDataBuilder;
+import io.skodjob.load.data.builder.custom.rows.CustomRowsRequestBuilder;
+import io.skodjob.load.data.enums.Tables;
 import io.skodjob.load.scenarios.builder.ConstantScenarioBuilder;
 
 import jakarta.enterprise.context.ApplicationScoped;
@@ -47,7 +50,16 @@ public class Generator {
                 }
             });
         });
-        System.out.println(entries.get(0));
+        return entries.stream().map(parser::parse).toList();
+    }
+
+    public List<DatabaseEntry> generateCustomRowsByteBatch(int count, int minId, int maxId, int messageSize) {
+        CustomRowsRequestBuilder<ConstantScenarioBuilder> customRowsRequestBuilder = new CustomRowsRequestBuilder<>(new CustomRowsByteDataBuilder(messageSize, Tables.BYTE_TABLE), new ConstantScenarioBuilder(1,1));
+        List<io.skodjob.dmt.schema.DatabaseEntry> entries = customRowsRequestBuilder
+                .setMinId(minId)
+                .setMaxId(maxId)
+                .setRequestCount(count)
+                .buildPlain();
         return entries.stream().map(parser::parse).toList();
     }
 }

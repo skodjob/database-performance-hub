@@ -70,6 +70,10 @@ public class RequestBuilder<G extends ScenarioBuilder> {
         return scenarioBuilder.prepareScenario(requests);
     }
 
+    public int getRequestCount() {
+        return requestCount;
+    }
+
     public List<Request> build(int rate) throws MalformedURLException, JsonProcessingException {
         List<DatabaseEntry> payloads = dataBuilder.addRequests(maximalRowCount, requestCount).build();
         return this.generateRequests(payloads, rate);

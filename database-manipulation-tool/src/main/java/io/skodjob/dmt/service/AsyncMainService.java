@@ -69,6 +69,7 @@ public class AsyncMainService extends MainService {
             minId = maxId;
             maxId = maxId + rowBatchSize;
         }
+        LOG.info("Finished generating. Beginning execution.");
         executorPool.setCountDownLatch(batches.size());
         long start = System.currentTimeMillis();
         for (List<String> batch: batches) {

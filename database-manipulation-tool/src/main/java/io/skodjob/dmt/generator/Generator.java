@@ -2,9 +2,9 @@ package io.skodjob.dmt.generator;
 
 import io.skodjob.dmt.parser.DmtSchemaParser;
 import io.skodjob.dmt.model.DatabaseEntry;
-import io.skodjob.load.data.builder.AviationDataBuilder;
 import io.skodjob.load.data.builder.ByteDataBuilder;
 import io.skodjob.load.data.builder.RequestBuilder;
+import io.skodjob.load.data.builder.custom.rows.CustomRowsAviationDataBuilder;
 import io.skodjob.load.data.builder.custom.rows.CustomRowsByteDataBuilder;
 import io.skodjob.load.data.builder.custom.rows.CustomRowsRequestBuilder;
 import io.skodjob.load.data.enums.Tables;
@@ -19,13 +19,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class Generator {
     @Inject
     DmtSchemaParser parser;
-    public List<DatabaseEntry> generateAviationBatch(int count, int maxRows) {
-        RequestBuilder<ConstantScenarioBuilder> requestBuilder
-                = new RequestBuilder<>(new AviationDataBuilder(), new ConstantScenarioBuilder(1, 1));
+    public List<DatabaseEntry> generateAviationBatch(int count, int minId, int maxId) {
+        CustomRowsRequestBuilder<ConstantScenarioBuilder> requestBuilder
+                = new CustomRowsRequestBuilder<>(new CustomRowsAviationDataBuilder(), new ConstantScenarioBuilder(1, 1));
 
         List<io.skodjob.dmt.schema.DatabaseEntry> entries = requestBuilder
+                .setMinId(minId)
+                .setMaxId(maxId)
                 .setRequestCount(count)
-                .setMaxRows(maxRows)
                 .buildPlain();
 
         return entries.stream().map(parser::parse).toList();

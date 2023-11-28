@@ -21,7 +21,7 @@ public class CustomRowsByteDataBuilder extends CustomRowsDataBuilder {
 
     @Override
     public DatabaseEntry generateCustomDataRow(Integer minId, Integer maxId) {
-        Integer id = RANDOM.nextInt(minId, maxId);
+        int id = RANDOM.nextInt(minId, maxId);
         DatabaseEntry schema = createDefaultScheme(id, table.toString().toLowerCase());
         String message = "a".repeat(dataSize);
         Integer payload_variable = RANDOM.nextInt(1000000);

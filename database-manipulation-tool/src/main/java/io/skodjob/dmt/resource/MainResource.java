@@ -154,7 +154,7 @@ public class MainResource {
     @Consumes()
     @POST
     public Response generateBatchLoad(@RestQuery int count, @RestQuery int maxRows) {
-        LOG.debug("Received generate load and use batch request");
+        LOG.info("Received generate load and use batch request");
         if (count == 0|| maxRows == 0) {
             return Response.noContent().status(Response.Status.BAD_REQUEST).build();
         }
@@ -168,7 +168,7 @@ public class MainResource {
     @Consumes()
     @POST
     public Response generateMongoBulkSizedLoad(@RestQuery int count, @RestQuery int maxRows, @RestQuery int messageSize) {
-        LOG.debug("Received generate mongo bulk load with custom message size request");
+        LOG.info("Received generate mongo bulk load with custom message size request");
         if (count == 0|| maxRows == 0 || messageSize == 0) {
             return Response.noContent().status(Response.Status.BAD_REQUEST).build();
         }

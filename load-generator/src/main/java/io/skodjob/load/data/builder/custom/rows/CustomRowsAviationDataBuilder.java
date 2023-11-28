@@ -3,8 +3,15 @@ package io.skodjob.load.data.builder.custom.rows;
 import io.skodjob.dmt.schema.DatabaseColumnEntry;
 import io.skodjob.dmt.schema.DatabaseEntry;
 import io.skodjob.load.data.DataTypeConvertor;
+import io.skodjob.load.data.enums.Tables;
 
 public class CustomRowsAviationDataBuilder extends CustomRowsDataBuilder {
+
+    public CustomRowsAviationDataBuilder() {
+        super();
+        super.table = Tables.AVIATION;
+    }
+
     @Override
     public DatabaseEntry generateDataRow(Integer idPool) {
         return generateCustomDataRow(0, idPool);

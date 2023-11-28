@@ -30,7 +30,7 @@ public class AsyncMainService extends MainService {
     MongoBsonCreator mongoBsonCreator;
 
     public long[] createAndExecuteLoad(int count, int maxRows) {
-        List<String> statements = generateAviationSqlQueries(count, maxRows);
+        List<String> statements = generateAviationSqlQueries(count,0, maxRows);
         executorPool.setCountDownLatch(statements.size());
         long start = System.currentTimeMillis();
         for (String statement: statements) {
@@ -40,13 +40,41 @@ public class AsyncMainService extends MainService {
     }
 
     public long[] createAndExecuteBatchLoad(int count, int maxRows) {
-        List<String> queries = generateAviationSqlQueries(count, maxRows);
         int poolSize = executorPool.getPoolSize();
-        int batchSize = queries.size() / poolSize;
+        int batchSize = count / poolSize;
+        int rowBatchSize = maxRows / poolSize;
         List<List<String>> batches = new ArrayList<>();
-        for (int i = 0; i < queries.size(); i += batchSize) {
-            batches.add(queries.subList(i, Math.min(i + batchSize, queries.size())));
+        int minId = 0;
+        int maxId = rowBatchSize;
+        for (int i = 0; i < count; i += batchSize) {
+            List<String> queries = generateAviationSqlQueries(batchSize, minId, maxId);
+            batches.add(queries);
+            minId = maxId;
+            maxId = maxId + rowBatchSize;
         }
+        LOG.info("Finished generating. Beginning execution.");
+        executorPool.setCountDownLatch(batches.size());
+        long start = System.currentTimeMillis();
+        for (List<String> batch: batches) {
+            executorPool.executeFunction(dao -> dao.executeBatchStatement(batch));
+        }
+        return waitForLastTask(start);
+    }
+
+    public long[] createAndExecuteSizedBatchLoad(int count, int maxRows, int messageSize) {
+        int poolSize = executorPool.getPoolSize();
+        int batchSize = count / poolSize;
+        int rowBatchSize = maxRows / poolSize;
+        List<List<String>> batches = new ArrayList<>();
+        int minId = 0;
+        int maxId = rowBatchSize;
+        for (int i = 0; i < count; i += batchSize) {
+            List<String> queries = generateSizedCustomRowBatch(batchSize, minId, maxId, messageSize);
+            batches.add(queries);
+            minId = maxId;
+            maxId = maxId + rowBatchSize;
+        }
+        LOG.info("Finished generating. Beginning execution.");
         executorPool.setCountDownLatch(batches.size());
         long start = System.currentTimeMillis();
         for (List<String> batch: batches) {
@@ -100,8 +128,16 @@ public class AsyncMainService extends MainService {
         return new long[] {lastThreadExecuted, lastThreadFinished};
     }
 
-    private List<String> generateAviationSqlQueries(int count, int maxRows) {
-        List<DatabaseEntry> entries = generator.generateAviationBatch(count, maxRows);
+    private List<String> generateAviationSqlQueries(int count, int minId, int maxId) {
+        List<DatabaseEntry> entries = generator.generateAviationBatch(count, minId, maxId);
+        return checkInnerDbGetQueries(entries);
+    }
+    private List<String> generateSizedCustomRowBatch(int count, int minId, int maxId, int messageSize) {
+        List<DatabaseEntry> entries = generator.generateCustomRowsByteBatch(count, minId, maxId, messageSize);
+        return checkInnerDbGetQueries(entries);
+    }
+
+    private List<String> checkInnerDbGetQueries(List<DatabaseEntry> entries) {
         createTable(entries.get(0));
         List<String> queries = new ArrayList<>();
         for (DatabaseEntry entry: entries) {

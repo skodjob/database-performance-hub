@@ -5,12 +5,16 @@ mongo ansible_host= ansible_user=
 [dmts]
 dmt ansible_host= ansible_user= 
 
+[perf-suites]
+perf-suite ansible_host= ansible_user=
+
 [netdataParent]
 masterNode ansible_host= ansible_user=
 
 [netdata:children]
 dbservers
 dmts
+perf-suites
 
 [netdataNodes:children]
 netdata
@@ -27,6 +31,10 @@ dmt_repository=https://github.com/Debezium-performance/database-manipulation-too
 dmt_branch=Performance-edition
 git_username=
 git_token=
+
+[perf-suites:vars]
+suite_repository=https://github.com/Debezium-performance/debezium-perf-suite.git
+suite_branch=main
 
 [netdataParent:vars]
 # One metric generates 1 byte of data per second. We have about 9000 metrics enabled.

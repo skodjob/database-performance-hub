@@ -1,0 +1,23 @@
+---
+- hosts: perf-suites
+  name: Deploying Debezium performance testsuite
+  tasks:
+    - name: Clone perf-suite
+      git:
+        repo: "{{ suite_repository }}"
+        version: "{{ suite_branch }}"
+        dest: "~/perf-suite"
+        force: true
+
+    - name: Install maven
+      become: true
+      dnf:
+        name: maven
+
+    - name: Execute SQL tests
+      shell: "mvn test -Dtest=\"BasicSqlPrintTest\" -Dtest.dmt.url={{ hostvars['dmt'].ansible_host }}:8080 -Dtest.kafka.topic={{ kafka_topic }} -Dtest.kafka.bootstrap.servers={{ kafka_server }}:9092 -Dtest.result.database=\"{{ results_database_string }}\" -Dcheckstyle.skip"
+      when: hostvars['mongo'].ansible_host == ""
+
+    - name: Execute Mongo tests
+      shell: "mvn test -Dtest=\"BasicMongoPrintTest\" -Dtest.dmt.url={{ hostvars['dmt'].ansible_host }}:8080 -Dtest.kafka.topic={{ kafka_topic }} -Dtest.kafka.bootstrap.servers={{ kafka_server }}:9092 -Dtest.result.database=\"{{ results_database_string }}\" -Dcheckstyle.skip"
+      when: hostvars['mongo'].ansible_host != ""

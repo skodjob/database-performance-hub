@@ -100,4 +100,9 @@
     - name: Build DMT
       command:
         cmd: ./mvnw clean install
-        chdir: "~/database-performance-hub/database-manipulation-tool"
+        chdir: "~/database-performance-hub"
+
+    - name: Run DMT
+      command:
+        cmd: nohup java -Xms10G -jar quarkus-run.jar </dev/null >/dev/null 2>&1 &
+        chdir: "~/database-performance-hub/database-manipulation-tool/target/quarkus-app"

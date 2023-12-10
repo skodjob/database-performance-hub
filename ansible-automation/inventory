@@ -35,6 +35,9 @@ git_token=
 [perf-suites:vars]
 suite_repository=https://github.com/Debezium-performance/debezium-perf-suite.git
 suite_branch=main
+kafka_topic=
+kafka_server=
+results_database_string=
 
 [netdataParent:vars]
 # One metric generates 1 byte of data per second. We have about 9000 metrics enabled.

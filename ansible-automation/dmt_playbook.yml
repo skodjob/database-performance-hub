@@ -49,16 +49,6 @@
       become: true
       dnf:
         name: java-17-openjdk-devel
-
-    - name: Create .m2 directory
-      file:
-        path: ~/.m2
-        state: directory
-
-    - name: Copy maven settings.xml for github authentication
-      template:
-        src: settings.xml.j2
-        dest: ~/.m2/settings.xml
         
     - name: Clone dmt 
       git:

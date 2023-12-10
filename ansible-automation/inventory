@@ -1,6 +1,7 @@
 [dbservers]
 mysql ansible_host= ansible_user=
 mongo ansible_host= ansible_user=
+postgres ansible_host= ansible_user=
 
 [dmts]
 dmt ansible_host= ansible_user= 

@@ -56,9 +56,7 @@ public abstract class AbstractBasicQueryCreator implements QueryCreator {
         }
         builder.append("PRIMARY KEY (")
                 .append(databaseTableMetadata.getPrimary().getName())
-                .append("), ");
-        builder.delete(builder.length() - 2, builder.length())
-                .append(")");
+                .append("))");
         String query = builder.toString();
         LOG.debug("Created TABLE CREATE query: " + query);
         return query;
@@ -98,9 +96,9 @@ public abstract class AbstractBasicQueryCreator implements QueryCreator {
                     .append(column.getName())
                     .append(" ")
                     .append(column.getDataType())
-                    .append(", ");
+                    .append(",");
         }
-        builder.delete(builder.length() - 2, builder.length());
+        builder.delete(builder.length() - 1, builder.length());
         String query = builder.toString();
         LOG.debug("Created ALTER TABLE query: " + query);
         return query;

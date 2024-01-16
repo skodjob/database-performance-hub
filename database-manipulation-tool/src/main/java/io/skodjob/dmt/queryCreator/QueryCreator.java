@@ -20,9 +20,9 @@ public interface QueryCreator {
 
     String addColumnsQuery(List<DatabaseColumn> columns, String databaseName);
 
-    String dropTable(DatabaseTableMetadata databaseTableMetadata);
+    String dropTableQuery(DatabaseTableMetadata databaseTableMetadata);
 
-    String dropDatabase(String schema);
+    String dropDatabaseQuery(String schema);
 
-    String createDatabase(String schema);
+    String createDatabaseQuery(String schema);
 }

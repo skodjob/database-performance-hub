@@ -96,7 +96,7 @@ public abstract class AbstractBasicDao implements Dao {
         DatabaseTableMetadata metadata = databaseEntry.getDatabaseTableMetadata();
         try (Connection conn = source.getConnection();
                 Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.dropTable(metadata));
+            stmt.execute(queryCreator.dropTableQuery(metadata));
         }
         catch (SQLException ex) {
             LOG.error("Could not drop table " + metadata.getName());

@@ -17,8 +17,7 @@ public class PostgresQueryCreator extends AbstractBasicQueryCreator {
 
     private static final Logger LOG = Logger.getLogger(PostgresQueryCreator.class);
 
-    public PostgresQueryCreator() {
-    }
+    public PostgresQueryCreator() {}
 
     @Override
     public String createTableQuery(DatabaseTableMetadata databaseTableMetadata) {
@@ -34,24 +33,22 @@ public class PostgresQueryCreator extends AbstractBasicQueryCreator {
         }
         builder.append("PRIMARY KEY (")
                 .append(databaseTableMetadata.getPrimary().getName())
-                .append("), ");
+                .append("))");
 
-        builder.delete(builder.length() - 2, builder.length())
-                .append(")");
         String query = builder.toString();
         LOG.debug("Created TABLE CREATE query: " + query);
         return query;
     }
 
     @Override
-    public String dropDatabase(String schema) {
+    public String dropDatabaseQuery(String schema) {
         String query = "DROP SCHEMA IF EXISTS " + schema + " CASCADE";
         LOG.debug("Created DROP SCHEMA query: " + query);
         return query;
     }
 
     @Override
-    public String createDatabase(String schema) {
+    public String createDatabaseQuery(String schema) {
         String query = "CREATE SCHEMA " + schema;
         LOG.debug("Created CREATE SCHEMA query: " + query);
         return query;
@@ -59,7 +56,7 @@ public class PostgresQueryCreator extends AbstractBasicQueryCreator {
 
     private String convertDouble(String dataType) {
         if (dataType.equalsIgnoreCase("double")) {
-            return "Double Precision";
+            return "DOUBLE PRECISION";
         }
         return dataType;
     }

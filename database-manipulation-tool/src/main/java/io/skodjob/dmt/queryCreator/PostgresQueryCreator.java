@@ -41,14 +41,14 @@ public class PostgresQueryCreator extends AbstractBasicQueryCreator {
     }
 
     @Override
-    public String dropDatabase(String schema) {
+    public String dropDatabaseQuery(String schema) {
         String query = "DROP SCHEMA IF EXISTS " + schema + " CASCADE";
         LOG.debug("Created DROP SCHEMA query: " + query);
         return query;
     }
 
     @Override
-    public String createDatabase(String schema) {
+    public String createDatabaseQuery(String schema) {
         String query = "CREATE SCHEMA " + schema;
         LOG.debug("Created CREATE SCHEMA query: " + query);
         return query;

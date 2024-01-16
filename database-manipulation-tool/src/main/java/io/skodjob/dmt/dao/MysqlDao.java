@@ -34,8 +34,8 @@ public final class MysqlDao extends AbstractBasicDao {
         try (Connection conn = source.getConnection();
                 Statement stmt = conn.createStatement()) {
             String schema = conn.getCatalog();
-            stmt.execute(queryCreator.dropDatabase(schema));
-            stmt.execute(queryCreator.createDatabase(schema));
+            stmt.execute(queryCreator.dropDatabaseQuery(schema));
+            stmt.execute(queryCreator.createDatabaseQuery(schema));
             stmt.execute(((MysqlQueryCreator) queryCreator).useDatabase(schema));
             LOG.info("Successfully reset database");
         }

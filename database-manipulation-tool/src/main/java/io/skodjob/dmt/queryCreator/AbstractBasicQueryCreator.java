@@ -105,7 +105,7 @@ public abstract class AbstractBasicQueryCreator implements QueryCreator {
     }
 
     @Override
-    public String dropTable(DatabaseTableMetadata databaseTableMetadata) {
+    public String dropTableQuery(DatabaseTableMetadata databaseTableMetadata) {
         String query = "DROP TABLE IF EXISTS " + databaseTableMetadata.getName();
         LOG.debug("Created DROP TABLE query: " + query);
         return query;

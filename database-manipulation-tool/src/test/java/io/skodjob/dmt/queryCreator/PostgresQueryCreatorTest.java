@@ -51,23 +51,23 @@ class PostgresQueryCreatorTest {
     }
 
     @Test
-    void dropTable() {
+    void dropTableQuery() {
         String expectedQuery = "DROP TABLE IF EXISTS TestTable";
-        String actualQuery = postgresQueryCreator.dropTable(generateTableMetadata());
+        String actualQuery = postgresQueryCreator.dropTableQuery(generateTableMetadata());
         Assertions.assertEquals(expectedQuery, actualQuery);
     }
 
     @Test
-    void dropDatabase() {
+    void dropDatabaseQuery() {
         String expectedQuery = "DROP SCHEMA IF EXISTS TestSchema CASCADE";
-        String actualQuery = postgresQueryCreator.dropDatabase("TestSchema");
+        String actualQuery = postgresQueryCreator.dropDatabaseQuery("TestSchema");
         Assertions.assertEquals(expectedQuery, actualQuery);
     }
 
     @Test
-    void createDatabase() {
+    void createDatabaseQuery() {
         String expectedQuery = "CREATE SCHEMA TestSchema";
-        String actualQuery = postgresQueryCreator.createDatabase("TestSchema");
+        String actualQuery = postgresQueryCreator.createDatabaseQuery("TestSchema");
         Assertions.assertEquals(expectedQuery, actualQuery);
     }
 }

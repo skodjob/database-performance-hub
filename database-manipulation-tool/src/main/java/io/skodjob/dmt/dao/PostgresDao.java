@@ -10,7 +10,6 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import jakarta.enterprise.context.Dependent;
-import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Inject;
 
 
@@ -35,8 +34,8 @@ public final class PostgresDao extends AbstractBasicDao {
         try (Connection conn = source.getConnection();
                 Statement stmt = conn.createStatement()) {
             String schema = "public";
-            stmt.execute(queryCreator.dropDatabase(schema));
-            stmt.execute(queryCreator.createDatabase(schema));
+            stmt.execute(queryCreator.dropDatabaseQuery(schema));
+            stmt.execute(queryCreator.createDatabaseQuery(schema));
             LOG.info("Successfully reset database");
         }
         catch (SQLException ex) {

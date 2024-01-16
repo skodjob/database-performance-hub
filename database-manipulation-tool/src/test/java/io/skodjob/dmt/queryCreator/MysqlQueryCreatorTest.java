@@ -52,28 +52,28 @@ class MysqlQueryCreatorTest {
     }
 
     @Test
-    void dropTable() {
+    void dropTableQuery() {
         String expectedQuery = "DROP TABLE IF EXISTS TestTable";
-        String actualQuery = mysqlQueryCreator.dropTable(generateTableMetadata());
+        String actualQuery = mysqlQueryCreator.dropTableQuery(generateTableMetadata());
         Assertions.assertEquals(expectedQuery, actualQuery);
     }
 
     @Test
-    void dropDatabase() {
+    void dropDatabaseQuery() {
         String expectedQuery = "DROP SCHEMA IF EXISTS TestSchema";
-        String actualQuery = mysqlQueryCreator.dropDatabase("TestSchema");
+        String actualQuery = mysqlQueryCreator.dropDatabaseQuery("TestSchema");
         Assertions.assertEquals(expectedQuery, actualQuery);
     }
 
     @Test
-    void createDatabase() {
+    void createDatabaseQuery() {
         String expectedQuery = "CREATE SCHEMA TestSchema";
-        String actualQuery = mysqlQueryCreator.createDatabase("TestSchema");
+        String actualQuery = mysqlQueryCreator.createDatabaseQuery("TestSchema");
         Assertions.assertEquals(expectedQuery, actualQuery);
     }
 
     @Test
-    void useDatabase() {
+    void useDatabaseQuery() {
         String expectedQuery = "USE TestSchema";
         String actualQuery = mysqlQueryCreator.useDatabase("TestSchema");
         Assertions.assertEquals(expectedQuery, actualQuery);

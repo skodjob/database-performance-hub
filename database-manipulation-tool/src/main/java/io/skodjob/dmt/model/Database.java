@@ -59,7 +59,7 @@ public class Database {
 
     /**
      * @param tableMetadata contains columns that are required in the database table
-     * @return List of columns added. Is empty table did not need alteration. Null the table was created.
+     * @return List of columns added. Is empty if the table did not need alteration. Null if the table was created.
      */
     public List<DatabaseColumn> createOrAlterTable(DatabaseTableMetadata tableMetadata) {
         if (createTableIfNotExists(tableMetadata)) {

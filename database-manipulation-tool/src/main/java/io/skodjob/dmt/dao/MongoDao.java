@@ -17,6 +17,7 @@ import io.skodjob.dmt.queryCreator.MongoBsonCreator;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.eclipse.microprofile.faulttolerance.Retry;
 import org.jboss.logging.Logger;
 
 import com.mongodb.client.MongoClient;
@@ -32,6 +33,7 @@ import io.quarkus.mongodb.MongoClientName;
 @Dependent
 @LookupIfProperty(name = "quarkus.mongodb.main.enabled", stringValue = "true")
 @Unremovable
+@Retry
 public final class MongoDao implements Dao {
 
     @ConfigProperty(name = "mongodb.database")
@@ -48,6 +50,7 @@ public final class MongoDao implements Dao {
 
     @Override
     public void insert(DatabaseEntry databaseEntry) {
+        LOG.debug("Inserting into Mongo " + databaseEntry);
         try {
             MongoDatabase db = getDatabase();
             Document insert = bsonCreator.insertDocument(databaseEntry);
@@ -67,6 +70,7 @@ public final class MongoDao implements Dao {
 
     @Override
     public void update(DatabaseEntry databaseEntry) {
+        LOG.debug("Updating into Mongo " + databaseEntry);
         try {
             MongoDatabase db = getDatabase();
             DatabaseColumnEntry primary = databaseEntry.getPrimaryColumnEntry();
@@ -99,19 +103,20 @@ public final class MongoDao implements Dao {
     @Override
     public void createTable(DatabaseEntry databaseEntry) {
         DatabaseTableMetadata metadata = databaseEntry.getDatabaseTableMetadata();
+        LOG.debug("Creating collection in mongo " + metadata.getName());
         try {
             MongoDatabase db = getDatabase();
             db.createCollection(metadata.getName());
         }
         catch (Exception me) {
-            LOG.error("Could not create table " + metadata);
+            LOG.error("Could not create collection " + metadata.getName());
             LOG.error(me.getMessage());
             throw me;
         }
     }
 
     /**
-     * Since Mongo does table alteration automatically this method does not need to do anything. Due to implementing the DAO interface the method must be here even though is empty.
+     * Since Mongo does table alteration automatically this method does not need to do anything. Due to implementing the DAO interface the method must be here even though its empty.
      * @param columns does nothing
      * @param metadata does nothing
      */
@@ -122,12 +127,13 @@ public final class MongoDao implements Dao {
     @Override
     public void dropTable(DatabaseEntry databaseEntry) {
         DatabaseTableMetadata metadata = databaseEntry.getDatabaseTableMetadata();
+        LOG.debug("Dropping collection in mongo " + metadata.getName());
         try {
             MongoDatabase db = getDatabase();
             db.getCollection(metadata.getName()).drop();
         }
         catch (Exception me) {
-            LOG.error("Could not drop table " + metadata);
+            LOG.error("Could not drop collection " + metadata);
             LOG.error(me.getMessage());
             throw me;
         }
@@ -135,6 +141,7 @@ public final class MongoDao implements Dao {
 
     @Override
     public void resetDatabase() {
+        LOG.debug("Resetting mongo database ");
         try {
             MongoDatabase db = getDatabase();
             db.drop();
@@ -162,6 +169,7 @@ public final class MongoDao implements Dao {
 
     @Override
     public Instant timedInsert(DatabaseEntry databaseEntry) {
+        LOG.debug("Inserting timed insert into Mongo " + databaseEntry);
         try {
             MongoDatabase db = getDatabase();
             Document insert = bsonCreator.insertDocument(databaseEntry);

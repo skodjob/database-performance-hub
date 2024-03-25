@@ -12,7 +12,7 @@ import jakarta.json.JsonObject;
 import org.jboss.logging.Logger;
 
 import io.skodjob.dmt.dao.DaoManager;
-import io.skodjob.dmt.model.Database;
+import io.skodjob.dmt.database.Database;
 import io.skodjob.dmt.utils.ResponseJsonBuilder;
 
 @ApplicationScoped

@@ -12,7 +12,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 
-import io.skodjob.dmt.model.Database;
+import io.skodjob.dmt.database.Database;
 import io.skodjob.dmt.model.DatabaseColumnEntry;
 import io.skodjob.dmt.model.DatabaseTable;
 import io.skodjob.dmt.model.DatabaseColumn;

@@ -3,13 +3,20 @@
  *
  * Licensed under the Apache Software License version 2.0, available at http://www.apache.org/licenses/LICENSE-2.0
  */
-package io.skodjob.dmt.model;
+package io.skodjob.dmt.database;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
+import io.micrometer.prometheus.PrometheusMeterRegistry;
+import io.skodjob.dmt.model.DatabaseColumn;
+import io.skodjob.dmt.model.DatabaseEntry;
+import io.skodjob.dmt.model.DatabaseTable;
+import io.skodjob.dmt.model.DatabaseTableMetadata;
 import jakarta.enterprise.context.ApplicationScoped;
 
 import io.skodjob.dmt.exception.InnerDatabaseException;
@@ -20,12 +27,15 @@ import io.quarkus.arc.Lock;
 @Lock
 @ApplicationScoped
 public class Database {
+    private final MeterRegistry meterRegistry;
     Map<String, DatabaseTable> tables;
 
     private static final Logger LOG = Logger.getLogger(Database.class);
 
-    public Database() {
+    public Database(PrometheusMeterRegistry meterRegistry) {
         tables = new HashMap<>();
+        this.meterRegistry = meterRegistry;
+        meterRegistry.gaugeMapSize("table.count", Tags.empty(), tables);
     }
 
     @Lock(value = Lock.Type.READ)
@@ -119,5 +129,6 @@ public class Database {
 
     private void createTable(DatabaseTableMetadata tableMetadata) {
         tables.put(tableMetadata.getName(), new DatabaseTable(tableMetadata));
+        meterRegistry.gaugeMapSize(tableMetadata.getName() + ".table.size", Tags.empty(), tables.get(tableMetadata.getName()).getRowsAsMap());
     }
 }

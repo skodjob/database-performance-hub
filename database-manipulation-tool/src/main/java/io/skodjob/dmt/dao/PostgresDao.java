@@ -18,10 +18,12 @@ import io.skodjob.dmt.exception.RuntimeSQLException;
 import io.skodjob.dmt.queryCreator.PostgresQueryCreator;
 import io.quarkus.arc.Unremovable;
 import io.quarkus.arc.lookup.LookupIfProperty;
+import org.eclipse.microprofile.faulttolerance.Retry;
 
 @Dependent
 @LookupIfProperty(name = "quarkus.datasource.postgresql.enabled", stringValue = "true")
 @Unremovable
+@Retry
 public final class PostgresDao extends AbstractBasicDao {
 
     @Inject
@@ -34,12 +36,14 @@ public final class PostgresDao extends AbstractBasicDao {
         try (Connection conn = source.getConnection();
                 Statement stmt = conn.createStatement()) {
             String schema = "public";
+            LOG.debug("Dropping schema " + schema);
             stmt.execute(queryCreator.dropDatabaseQuery(schema));
+            LOG.debug("Creating schema " + schema);
             stmt.execute(queryCreator.createDatabaseQuery(schema));
-            LOG.info("Successfully reset database");
+            LOG.info("Successfully reset schema " + schema);
         }
         catch (SQLException ex) {
-            LOG.error("Could not reset database");
+            LOG.error("Could not reset schema");
             LOG.error(ex.getMessage());
             throw new RuntimeSQLException(ex);
         }

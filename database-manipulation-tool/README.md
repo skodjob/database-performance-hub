@@ -1,11 +1,24 @@
-# Database-manipulation-tool (Performance edition)
-This is a special version used for database performance testing. There are added and removed features, endpoints and dependencies.
-Changes:
-- Most of the logging was removed
-- Query retrying was removed
-- Prometheus' metrics are no longer exposed
-- Added generate load endpoints. Option to set number of worker threads and connections.
-- Tracks time of requests.
+# Database-manipulation-tool 
+Java quarkus application used for idempotent upsertion of a single entity into multiple different databases.
+
+Main functionality is the upsert with table creation/alteration. You send a http request with JSON body (example below)
+and the tables will be either created or altered (columns will be added to the table) so the schema corresponds with the JSON. Then it proceeds to either insert or update the row into all the databases.
+
+There is also a special profile used for load generation in performance testing of database-dependent systems.
+# Classic and Performance profiles
+There are two main use-cases for DMT and each uses a corresponding Quarkus profile.
+### Classic profile
+Classic profile is used for CRUD manipulation of databases when utilizing DMT for testing database dependent systems.\
+Classic profile is the default DMT runtime profile and does not require any additional options.\
+If you want to specify the profile even though you do not need to, use the `-Dquarkus.profile=classic` maven option or the `QUARKUS_PROFILE=classic` environment variable.
+### Performance profile
+Performance profile is used when utilizing DMT for load generation in performance testing database dependant systems.\
+It currently does two changes to increase performance of DMT:
+- Disables Prometheus metrics.
+- Disables retrying of statement execution.  
+
+When using DMT for load generation in performance testing, use the `performance` profile with the `-Dquarkus.profile=performance` maven option or the `QUARKUS_PROFILE=performance` environment variable.
+
 ## Working features
 
 This is currently in alpha state so there are not many features completed and the ones that are finished aren't tested properly.

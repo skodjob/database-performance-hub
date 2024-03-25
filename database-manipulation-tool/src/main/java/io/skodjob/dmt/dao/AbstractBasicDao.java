@@ -42,67 +42,33 @@ public abstract class AbstractBasicDao implements Dao {
 
     @Override
     public void insert(DatabaseEntry databaseEntry) {
-        try (Connection conn = source.getConnection();
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.insertQuery(databaseEntry));
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not insert into database " + databaseEntry);
-            LOG.error(ex.getMessage());
-        }
+        executeStatement(queryCreator.insertQuery(databaseEntry),
+                "Could not insert into database " + databaseEntry);
     }
 
     @Override
     public void update(DatabaseEntry databaseEntry) {
-        try (Connection conn = source.getConnection();
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.updateQuery(databaseEntry));
-        }
-        catch (Exception ex) {
-            LOG.error("Could not update database " + databaseEntry);
-            LOG.error(ex.getMessage());
-        }
+        executeStatement(queryCreator.updateQuery(databaseEntry),
+                "Could not update database " + databaseEntry);
     }
 
     @Override
     public void createTable(DatabaseEntry databaseEntry) {
         DatabaseTableMetadata metadata = databaseEntry.getDatabaseTableMetadata();
-        try (Connection conn = source.getConnection();
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.createTableQuery(metadata));
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not create table " + metadata);
-            LOG.error(ex.getMessage());
-            throw new RuntimeSQLException(ex);
-        }
+        executeStatement(queryCreator.createTableQuery(metadata), "Could not create table " + metadata);
     }
 
     @Override
     public void alterTable(List<DatabaseColumn> columns, DatabaseTableMetadata metadata) {
-        try (Connection conn = source.getConnection();
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.addColumnsQuery(columns, metadata.getName()));
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not add columns " + columns + " to table " + metadata.getName());
-            LOG.error(ex.getMessage());
-            throw new RuntimeSQLException(ex);
-        }
+        executeStatement(queryCreator.addColumnsQuery(columns, metadata.getName()),
+                "Could not add columns " + columns + " to table " + metadata.getName());
     }
 
     @Override
     public void dropTable(DatabaseEntry databaseEntry) {
         DatabaseTableMetadata metadata = databaseEntry.getDatabaseTableMetadata();
-        try (Connection conn = source.getConnection();
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.dropTableQuery(metadata));
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not drop table " + metadata.getName());
-            LOG.error(ex.getMessage());
-            throw new RuntimeSQLException(ex);
-        }
+        executeStatement(queryCreator.dropTableQuery(metadata),
+                "Could not drop table " + metadata.getName());
     }
 
     @Override
@@ -112,28 +78,14 @@ public abstract class AbstractBasicDao implements Dao {
 
     @Override
     public Instant timedInsert(DatabaseEntry databaseEntry) {
-        try (Connection conn = source.getConnection();
-                Statement stmt = conn.createStatement()) {
-            stmt.execute(queryCreator.insertQuery(databaseEntry));
-            return Instant.now();
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not insert into database timed request" + databaseEntry);
-            LOG.error(ex.getMessage());
-            throw new RuntimeSQLException(ex);
-        }
+        executeStatement(queryCreator.insertQuery(databaseEntry),
+                "Could not insert into database timed request" + databaseEntry);
+        return Instant.now();
     }
 
     @Override
     public void executeStatement(String statement) {
-        try (Connection conn = source.getConnection();
-             Statement stmt = conn.createStatement()) {
-            stmt.execute(statement);
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not execute statement " + statement);
-            LOG.error(ex.getMessage());
-        }
+        executeStatement(statement, "Could not execute statement " + statement);
     }
 
     @Override
@@ -166,7 +118,7 @@ public abstract class AbstractBasicDao implements Dao {
             }
         }
         catch (SQLException ex) {
-            LOG.error("Could not execute batch statement " + statements.get(1) + " ...");
+            LOG.error("Could not execute batch statement " + statements.get(0) + " ...");
             LOG.error(ex.getMessage());
         }
     }
@@ -177,5 +129,17 @@ public abstract class AbstractBasicDao implements Dao {
 
     public QueryCreator getQueryCreator() {
         return queryCreator;
+    }
+
+    private void executeStatement(String statement, String errorMessage) {
+        LOG.debug("Executing " + statement);
+        try (Connection conn = source.getConnection();
+             Statement stmt = conn.createStatement()) {
+            stmt.execute(statement);
+        }
+        catch (SQLException ex) {
+            LOG.error(errorMessage);
+            LOG.error(ex.getMessage());
+        }
     }
 }

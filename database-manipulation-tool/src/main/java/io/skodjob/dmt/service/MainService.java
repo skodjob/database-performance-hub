@@ -19,7 +19,7 @@ import org.jboss.logging.Logger;
 import io.skodjob.dmt.dao.Dao;
 import io.skodjob.dmt.dao.DaoManager;
 import io.skodjob.dmt.exception.InnerDatabaseException;
-import io.skodjob.dmt.model.Database;
+import io.skodjob.dmt.database.Database;
 import io.skodjob.dmt.model.DatabaseColumn;
 import io.skodjob.dmt.model.DatabaseEntry;
 import io.skodjob.dmt.model.DatabaseTableMetadata;

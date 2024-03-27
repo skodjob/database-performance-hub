@@ -23,6 +23,8 @@ When using DMT for load generation in performance testing, use the `performance`
 
 This is currently in alpha state so there are not many features completed and the ones that are finished aren't tested properly.
 
+### Databases
+
 | Database/feature        	       | Postgres 	 | Mongo 	 | Mysql 	 | Oracle 	 | SqlServer 	 | Db2 	 |
 |---------------------------------|------------|---------|---------|----------|-------------|-------|
 | Create table            	       | X    	     | X   	   | X   	   | 	        | 	           | 	     |
@@ -31,6 +33,18 @@ This is currently in alpha state so there are not many features completed and th
 | Delete                  	       | 	          | 	       | 	       | 	        | 	           | 	     |
 | Drop table        	             | X	         | X	      | X	      | 	        | 	           | 	     |
 | Reset Database        	         | X	         | 	X      | X	      | 	        | 	           | 	     |
+
+### Streams
+| Streaming system | Redis | Pulsar | RabbitMQ |
+|------------------|-------|--------|----------|
+| Poll from stream | X     |        |          |
+| Send to stream   | X     |        |          |
+| Auth             |       |        |          |
+
+### Redis configuration
+- `data.source.redis.host` -- Redis host (`localhost`)
+- `data.source.redis.port` -- Redis port (`6379`)
+- `data.source.redis.pool.max` -- Amount of connections open to Redis (`10`)
 
 ## Json insertion schema
 The Json schema is `DatabaseEntry` class from the DMT-schema project.  
@@ -80,6 +94,30 @@ You can reset all databases on DMT start with property `onstart.reset.database`.
 <br />
 <summary><code>POST</code> <code><b>/Main/GenerateLoad?count={count}&maxRows={maxRows}</b></code> <code>(Creates set number of queries with maximum table size and upserts them into databases. Returns the time length of the whole request and just the execution of the queries)</code></summary>
 <summary><code>POST</code> <code><b>/Main/GenerateBatchLoad?count={count}&maxRows={maxRows}</b></code> <code>(Same as GenerateLoad but uses batch statements for better performance)</code></summary>
+<br />
+<summary>
+    <code>GET</code> 
+    <code><b>/Redis/pollMessages?max=5</b></code> 
+    <code>
+        [
+            "channel1",
+            "channel2"
+        ]
+    </code>
+    <code>Reads at most 'max' messages from specified channels</code>
+</summary>
+<summary>
+    <code>GET</code> 
+    <code><b>/Redis/sendMessage?channel=channel1</b></code> 
+    <code>
+        {
+            "rider": "Alonso",
+            "position": 1
+        }
+    </code>
+    <code>Sends a message specified in json body to the redis stream channel 
+    specified in as header argument</code>
+</summary>
 
 ## Running the application in dev mode
 

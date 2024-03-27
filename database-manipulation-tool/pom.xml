@@ -9,6 +9,7 @@
     <artifactId>database-performance-hub</artifactId>
     <groupId>io.skodjob</groupId>
     <version>1.0.0</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
 
   <properties>
@@ -84,7 +85,11 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-micrometer-registry-prometheus</artifactId>
     </dependency>
-
+    <dependency>
+      <groupId>redis.clients</groupId>
+      <artifactId>jedis</artifactId>
+      <version>4.3.1</version>
+    </dependency>
     <!-- Test dependencies -->
     <dependency>
       <groupId>io.quarkus</groupId>

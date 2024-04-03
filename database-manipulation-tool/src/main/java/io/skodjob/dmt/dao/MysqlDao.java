@@ -48,7 +48,7 @@ import org.eclipse.microprofile.faulttolerance.Retry;
 @Dependent
 @LookupIfProperty(name = "quarkus.datasource.mysql.enabled", stringValue = "true")
 @Unremovable
-@Retry
+@Retry(retryOn = RuntimeSQLException.class)
 public final class MysqlDao extends AbstractBasicDao {
 
     @Inject

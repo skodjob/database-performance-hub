@@ -48,7 +48,7 @@ import org.eclipse.microprofile.faulttolerance.Retry;
 @Dependent
 @LookupIfProperty(name = "quarkus.datasource.postgresql.enabled", stringValue = "true")
 @Unremovable
-@Retry
+@Retry(retryOn = RuntimeSQLException.class)
 public final class PostgresDao extends AbstractBasicDao {
 
     @Inject

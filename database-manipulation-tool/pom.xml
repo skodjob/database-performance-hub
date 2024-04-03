@@ -180,7 +180,7 @@
       </plugin>
     </plugins>
   </build>
-<!--  <profiles>
+  <profiles>
     <profile>
       <id>native</id>
       <activation>
@@ -188,19 +188,35 @@
           <name>native</name>
         </property>
       </activation>
-      <dependencies>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-kubernetes</artifactId>
-        </dependency>
-        <dependency>
-          <groupId>io.quarkus</groupId>
-          <artifactId>quarkus-kubernetes-config</artifactId>
-        </dependency>
-      </dependencies>
+<!--      <dependencies>-->
+<!--        <dependency>-->
+<!--          <groupId>io.quarkus</groupId>-->
+<!--          <artifactId>quarkus-kubernetes</artifactId>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--          <groupId>io.quarkus</groupId>-->
+<!--          <artifactId>quarkus-kubernetes-config</artifactId>-->
+<!--        </dependency>-->
+<!--      </dependencies>-->
       <properties>
         <skipITs>false</skipITs>
         <quarkus.package.type>native</quarkus.package.type>
+      </properties>
+    </profile>
+    <profile>
+      <id>classic</id>
+      <properties>
+        <skipITs>false</skipITs>
+        <quarkus.package.type>jar</quarkus.package.type>
+        <quarkus.profile>classic</quarkus.profile>
+      </properties>
+    </profile>
+    <profile>
+      <id>performance</id>
+      <properties>
+        <skipITs>false</skipITs>
+        <quarkus.package.type>jar</quarkus.package.type>
+        <quarkus.profile>performance</quarkus.profile>
       </properties>
     </profile>
     <profile>
@@ -215,5 +231,5 @@
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
     </profile>
-  </profiles>-->
+  </profiles>
 </project>

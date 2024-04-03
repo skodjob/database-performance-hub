@@ -157,7 +157,7 @@ public abstract class AbstractBasicDao implements Dao {
     }
 
     private void executeStatement(String statement, String errorMessage) {
-        LOG.debug("Executing " + statement);
+        LOG.info("Executing " + statement);
         try (Connection conn = source.getConnection();
              Statement stmt = conn.createStatement()) {
             stmt.execute(statement);
@@ -165,6 +165,7 @@ public abstract class AbstractBasicDao implements Dao {
         catch (SQLException ex) {
             LOG.error(errorMessage);
             LOG.error(ex.getMessage());
+            throw new RuntimeSQLException(ex);
         }
     }
 }

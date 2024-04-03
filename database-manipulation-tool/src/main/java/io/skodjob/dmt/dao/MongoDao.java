@@ -58,7 +58,7 @@ import io.quarkus.mongodb.MongoClientName;
 @Dependent
 @LookupIfProperty(name = "quarkus.mongodb.main.enabled", stringValue = "true")
 @Unremovable
-@Retry
+@Retry(retryOn = Exception.class)
 public final class MongoDao implements Dao {
 
     @ConfigProperty(name = "mongodb.database")

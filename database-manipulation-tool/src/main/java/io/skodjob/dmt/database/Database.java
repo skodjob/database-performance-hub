@@ -42,9 +42,10 @@ import io.skodjob.dmt.model.DatabaseColumn;
 import io.skodjob.dmt.model.DatabaseEntry;
 import io.skodjob.dmt.model.DatabaseTable;
 import io.skodjob.dmt.model.DatabaseTableMetadata;
-import jakarta.enterprise.context.ApplicationScoped;
 
 import io.skodjob.dmt.exception.InnerDatabaseException;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.inject.spi.CDI;
 import org.jboss.logging.Logger;
 
 import io.quarkus.arc.Lock;
@@ -57,10 +58,14 @@ public class Database {
 
     private static final Logger LOG = Logger.getLogger(Database.class);
 
-    public Database(PrometheusMeterRegistry meterRegistry) {
+    public Database() {
         tables = new HashMap<>();
-        this.meterRegistry = meterRegistry;
-        meterRegistry.gaugeMapSize("table.count", Tags.empty(), tables);
+        if (CDI.current().select(PrometheusMeterRegistry.class).isResolvable()) {
+            this.meterRegistry = CDI.current().select(PrometheusMeterRegistry.class).get();
+            meterRegistry.gaugeMapSize("table.count", Tags.empty(), tables);
+        } else {
+            this.meterRegistry = null;
+        }
     }
 
     @Lock(value = Lock.Type.READ)
@@ -154,6 +159,8 @@ public class Database {
 
     private void createTable(DatabaseTableMetadata tableMetadata) {
         tables.put(tableMetadata.getName(), new DatabaseTable(tableMetadata));
-        meterRegistry.gaugeMapSize(tableMetadata.getName() + ".table.size", Tags.empty(), tables.get(tableMetadata.getName()).getRowsAsMap());
+        if (meterRegistry != null) {
+            meterRegistry.gaugeMapSize(tableMetadata.getName() + ".table.size", Tags.empty(), tables.get(tableMetadata.getName()).getRowsAsMap());
+        }
     }
 }

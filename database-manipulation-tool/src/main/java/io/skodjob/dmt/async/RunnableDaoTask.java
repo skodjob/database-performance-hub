@@ -38,12 +38,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class RunnableUpsertSecond implements Runnable {
+public class RunnableDaoTask implements Runnable {
     List<Dao> dbs;
     MongoDao mongoDao;
-    Consumer<Dao> daoFunction;
+    Consumer<Dao> daoTask;
 
-    public RunnableUpsertSecond(List<Dao> dbs) {
+    public RunnableDaoTask(List<Dao> dbs) {
         this.dbs = new ArrayList<>();
         for (Dao dao: dbs) {
             if (dao.getClass().getName().contains("Mongo")) {
@@ -58,24 +58,24 @@ public class RunnableUpsertSecond implements Runnable {
     public void run()
     {
         for (Dao dao : dbs) {
-            daoFunction.accept(dao);
+            daoTask.accept(dao);
         }
     }
 
-    public Consumer<Dao> getDaoFunction() {
-        return daoFunction;
+    public Consumer<Dao> getDaoTask() {
+        return daoTask;
     }
 
-    public void setDaoFunction(Consumer<Dao> daoFunction) {
-        this.daoFunction = daoFunction;
+    public void setDaoTask(Consumer<Dao> daoTask) {
+        this.daoTask = daoTask;
     }
 
-    public void setDaoFunctionAndExecute(Consumer<Dao> daoFunction) {
-        setDaoFunction(daoFunction);
+    public void setDaoTaskAndExecute(Consumer<Dao> daoTask) {
+        setDaoTask(daoTask);
         run();
     }
 
-    public void executeMongoFunction(Consumer<MongoDao> daoFunction) {
-        daoFunction.accept(mongoDao);
+    public void executeMongoTask(Consumer<MongoDao> daoTask) {
+        daoTask.accept(mongoDao);
     }
 }

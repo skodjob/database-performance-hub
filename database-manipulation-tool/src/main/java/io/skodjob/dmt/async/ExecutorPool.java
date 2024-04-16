@@ -52,7 +52,7 @@ import java.util.function.Consumer;
 @Startup
 public class ExecutorPool {
     private final ExecutorService pool;
-    private final BlockingQueue<RunnableUpsertSecond> runnableUpsertSecondQueue;
+    private final BlockingQueue<RunnableDaoTask> runnableUpsertSecondQueue;
     private CountDownLatch latch;
 
 
@@ -62,7 +62,7 @@ public class ExecutorPool {
         latch = new CountDownLatch(0);
         runnableUpsertSecondQueue = new ArrayBlockingQueue<>(poolSize);
         for (int i = 0; i < poolSize; i++) {
-            runnableUpsertSecondQueue.add(new RunnableUpsertSecond(manager.getEnabledDbs()));
+            runnableUpsertSecondQueue.add(new RunnableDaoTask(manager.getEnabledDbs()));
         }
     }
 
@@ -75,14 +75,14 @@ public class ExecutorPool {
     }
 
     public void executeFunction(Consumer<Dao> daoFunction) {
-        RunnableUpsertSecond task;
+        RunnableDaoTask task;
         try {
             task = runnableUpsertSecondQueue.take();
         } catch (InterruptedException e) {
             return;
         }
         pool.submit(() -> {
-            task.setDaoFunctionAndExecute(daoFunction);
+            task.setDaoTaskAndExecute(daoFunction);
             try {
                 runnableUpsertSecondQueue.put(task);
             } catch (InterruptedException e) {
@@ -93,14 +93,14 @@ public class ExecutorPool {
     }
 
     public void executeMongoFunction(Consumer<MongoDao> daoFunction) {
-        RunnableUpsertSecond task;
+        RunnableDaoTask task;
         try {
             task = runnableUpsertSecondQueue.take();
         } catch (InterruptedException e) {
             return;
         }
         pool.submit(() -> {
-            task.executeMongoFunction(daoFunction);
+            task.executeMongoTask(daoFunction);
             try {
                 runnableUpsertSecondQueue.put(task);
             } catch (InterruptedException e) {

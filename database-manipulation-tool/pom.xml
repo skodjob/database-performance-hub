@@ -205,6 +205,16 @@
     </profile>
     <profile>
       <id>classic</id>
+      <dependencies>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-kubernetes</artifactId>
+        </dependency>
+        <dependency>
+          <groupId>io.quarkus</groupId>
+          <artifactId>quarkus-kubernetes-config</artifactId>
+        </dependency>
+      </dependencies>
       <properties>
         <skipITs>false</skipITs>
         <quarkus.package.type>jar</quarkus.package.type>

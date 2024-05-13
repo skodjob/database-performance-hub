@@ -44,7 +44,7 @@
   <parent>
     <artifactId>database-performance-hub</artifactId>
     <groupId>io.skodjob</groupId>
-    <version>1.0.0</version>
+    <version>0.0.1-alpha1</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 

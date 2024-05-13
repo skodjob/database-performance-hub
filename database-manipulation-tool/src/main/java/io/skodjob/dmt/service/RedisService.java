@@ -51,4 +51,8 @@ public class RedisService {
     public List<Map.Entry<String, List<StreamEntry>>> get(int amount, List<String> channels) {
         return redisDataSource.pollMessages(amount, channels);
     }
+
+    public void resetRedis() {
+        redisDataSource.flushRedis();
+    }
 }

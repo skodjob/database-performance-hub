@@ -13,6 +13,39 @@
     <relativePath>../pom.xml</relativePath>
   </parent>
 
+  <licenses>
+    <license>
+      <name>MIT</name>
+      <url>LICENSE</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git:/github.com/skodjob/database-performance-hub.git</connection>
+    <developerConnection>scm:git:ssh://github.com/skodjob/database-performance-hub.git</developerConnection>
+    <url>https://github.com/skodjob/database-performance-hub</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/skodjob/database-performance-hub/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <id>obabec</id>
+      <name>Ondrej Babec</name>
+      <email>ond.babec@gmail.com</email>
+    </developer>
+    <developer>
+      <id>novotnyJiri </id>
+      <name>Jiri Novotny</name>
+      <email>novotnyjirkajn@gmail.com</email>
+    </developer>
+  </developers>
+
+
+
   <properties>
     <compiler-plugin.version>3.11.0</compiler-plugin.version>
     <maven.compiler.source>17</maven.compiler.source>

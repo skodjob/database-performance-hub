@@ -6,9 +6,40 @@
 
   <artifactId>database-manipulation-tool-schema</artifactId>
   <version>${project.parent.version}</version>
-  <name>database-manipulation-tool-schema</name>
   <description>Library with database manipulation tool objects representing database entries (rows)</description>
+  <name>${project.groupId}:${project.artifactId}</name>
+  <url>https://github.com/skodjob/database-performance-hub</url>
 
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git:/github.com/skodjob/database-performance-hub.git</connection>
+    <developerConnection>scm:git:ssh://github.com/skodjob/database-performance-hub.git</developerConnection>
+    <url>https://github.com/skodjob/database-performance-hub</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/skodjob/database-performance-hub/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <id>obabec</id>
+      <name>Ondrej Babec</name>
+      <email>ond.babec@gmail.com</email>
+    </developer>
+    <developer>
+      <id>novotnyJiri </id>
+      <name>Jiri Novotny</name>
+      <email>novotnyjirkajn@gmail.com</email>
+    </developer>
+  </developers>
 
   <parent>
     <artifactId>database-performance-hub</artifactId>

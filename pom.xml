@@ -4,10 +4,45 @@
   <modelVersion>4.0.0</modelVersion>
 
   <artifactId>database-performance-hub</artifactId>
-  <name>Tool used for manipulation with multiple different dbs at once</name>
   <groupId>io.skodjob</groupId>
   <version>1.0.0</version>
   <packaging>pom</packaging>
+
+  <name>${project.groupId}:${project.artifactId}</name>
+  <description>Set of tools that allow manipulation with database via single HTML endpoint</description>
+  <url>https://github.com/skodjob/database-performance-hub</url>
+
+  <licenses>
+    <license>
+      <name>The Apache License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+
+  <scm>
+    <connection>scm:git:git:/github.com/skodjob/database-performance-hub.git</connection>
+    <developerConnection>scm:git:ssh://github.com/skodjob/database-performance-hub.git</developerConnection>
+    <url>https://github.com/skodjob/database-performance-hub</url>
+  </scm>
+
+  <issueManagement>
+    <system>GitHub</system>
+    <url>https://github.com/skodjob/database-performance-hub/issues</url>
+  </issueManagement>
+
+  <developers>
+    <developer>
+      <id>obabec</id>
+      <name>Ondrej Babec</name>
+      <email>ond.babec@gmail.com</email>
+    </developer>
+    <developer>
+      <id>novotnyJiri </id>
+      <name>Jiri Novotny</name>
+      <email>novotnyjirkajn@gmail.com</email>
+    </developer>
+  </developers>
+
 
   <modules>
     <module>database-manipulation-tool</module>
@@ -26,6 +61,12 @@
     <quarkus.platform.version>3.5.3</quarkus.platform.version>
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.2.2</surefire-plugin.version>
+    <maven.source.plugin.version>3.3.0</maven.source.plugin.version>
+    <maven.deploy.plugin.version>3.1.1</maven.deploy.plugin.version>
+    <maven.gpg.version>3.1.0</maven.gpg.version>
+    <sonatype.nexus.central>0.4.0</sonatype.nexus.central>
+    <maven.javadoc.version>3.4.1</maven.javadoc.version>
+    <maven.assembly.version>3.4.2</maven.assembly.version>
   </properties>
 
   <dependencies>
@@ -67,7 +108,128 @@
             </compilerArgs>
           </configuration>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-javadoc-plugin</artifactId>
+          <version>${maven.javadoc.version}</version>
+          <executions>
+            <execution>
+              <id>attach-javadocs</id>
+              <goals>
+                <goal>jar</goal>
+              </goals>
+              <configuration>
+                <show>public</show>
+                <failOnError>true</failOnError>
+                <failOnWarnings>true</failOnWarnings>
+              </configuration>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-source-plugin</artifactId>
+          <version>${maven.source.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>attach-sources</id>
+              <phase>deploy</phase>
+              <goals>
+                <goal>jar-no-fork</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>${maven.deploy.plugin.version}</version>
+          <executions>
+            <execution>
+              <id>deploy</id>
+              <phase>deploy</phase>
+              <goals>
+                <goal>deploy</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
       </plugins>
     </pluginManagement>
   </build>
+
+  <profiles>
+    <profile>
+      <id>ossrh</id>
+      <activation>
+        <activeByDefault>false</activeByDefault>
+      </activation>
+      <modules>
+        <module>database-manipulation-tool-schema</module>
+      </modules>
+      <properties>
+        <!--suppress UnresolvedMavenProperty -->
+        <gpg.executable>${env.GPG_EXECUTABLE}</gpg.executable>
+        <!--suppress UnresolvedMavenProperty -->
+        <gpg.passphrase>${env.GPG_PASSPHRASE}</gpg.passphrase>
+        <!--suppress UnresolvedMavenProperty -->
+        <gpg.keyname>${env.GPG_KEYNAME}</gpg.keyname>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-gpg-plugin</artifactId>
+            <version>${maven.gpg.version}</version>
+            <executions>
+              <execution>
+                <id>sign-artifacts</id>
+                <phase>deploy</phase>
+                <goals>
+                  <goal>sign</goal>
+                </goals>
+                <configuration>
+                  <gpgArguments>
+                    <arg>--batch</arg>
+                    <arg>--pinentry-mode</arg>
+                    <arg>loopback</arg>
+                  </gpgArguments>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.sonatype.central</groupId>
+            <artifactId>central-publishing-maven-plugin</artifactId>
+            <version>${sonatype.nexus.central}</version>
+            <extensions>true</extensions>
+            <configuration>
+              <publishingServerId>central</publishingServerId>
+              <tokenAuth>true</tokenAuth>
+              <checksums>all</checksums>
+              <autoPublish>true</autoPublish>
+            </configuration>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-assembly-plugin</artifactId>
+            <version>${maven.assembly.version}</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>single</goal>
+                </goals>
+                <configuration>
+                  <appendAssemblyId>false</appendAssemblyId>
+                  <tarLongFileMode>posix</tarLongFileMode>
+                  <descriptors>
+                    <descriptor>database-manipulation-tool-schema/src/main/assembly/dist.xml</descriptor>
+                  </descriptors>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
 </project>

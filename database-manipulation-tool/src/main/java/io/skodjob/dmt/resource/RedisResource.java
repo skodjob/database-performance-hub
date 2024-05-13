@@ -72,4 +72,11 @@ public class RedisResource {
         return Response.ok(res).build();
     }
 
+    @Path("reset")
+    @GET
+    public Response resetRedis() {
+        redisService.resetRedis();
+        return Response.ok().build();
+    }
+
 }

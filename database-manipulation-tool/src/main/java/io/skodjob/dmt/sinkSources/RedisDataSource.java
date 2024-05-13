@@ -78,4 +78,9 @@ public class RedisDataSource {
         return jedis.xread(XReadParams.xReadParams().count(maxAmount), streams);
     }
 
+    public void flushRedis() {
+        Jedis jedis = pool.getResource();
+        jedis.flushAll();
+    }
+
 }

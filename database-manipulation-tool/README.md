@@ -118,6 +118,11 @@ You can reset all databases on DMT start with property `onstart.reset.database`.
     <code>Sends a message specified in json body to the redis stream channel 
     specified in as header argument</code>
 </summary>
+<summary>
+    <code>GET</code> 
+    <code><b>/Redis/reset</b></code>
+    <code>Flush whole Redis instance</code>
+</summary>
 
 ## Running the application in dev mode
 

@@ -78,6 +78,11 @@ public class RedisDataSource {
         return jedis.xread(XReadParams.xReadParams().count(maxAmount), streams);
     }
 
+    public Map<String, String> readHash(String hashKey) {
+        Jedis jedis = pool.getResource();
+        return jedis.hgetAll(hashKey);
+    }
+
     public void flushRedis() {
         Jedis jedis = pool.getResource();
         jedis.flushAll();

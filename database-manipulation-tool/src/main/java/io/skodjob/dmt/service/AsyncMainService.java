@@ -60,16 +60,6 @@ public class AsyncMainService extends MainService {
     @Inject
     MongoBsonCreator mongoBsonCreator;
 
-    public long[] createAndExecuteLoad(int count, int maxRows) {
-        List<String> statements = generateAviationSqlQueries(count,0, maxRows);
-        executorPool.setCountDownLatch(statements.size());
-        long start = System.currentTimeMillis();
-        for (String statement: statements) {
-            executorPool.executeFunction(dao -> dao.executePreparedStatement(statement));
-        }
-        return waitForLastTask(start);
-    }
-
     public long[] createAndExecuteBatchLoad(int count, int maxRows) {
         int poolSize = executorPool.getPoolSize();
         int batchSize = count / poolSize;

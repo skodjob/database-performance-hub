@@ -161,20 +161,6 @@ public class MainResource {
         }
     }
 
-    @Path("GenerateLoad")
-    @Consumes()
-    @POST
-    public Response generateLoad(@RestQuery int count, @RestQuery int maxRows) {
-        LOG.debug("Received generate load request");
-        if (count == 0|| maxRows == 0) {
-            return Response.noContent().status(Response.Status.BAD_REQUEST).build();
-        }
-        long start = System.currentTimeMillis();
-        long[] time = mainService.createAndExecuteLoad(count, maxRows);
-        long totalTime = System.currentTimeMillis() - start;
-        return generateLoadJsonResponse(totalTime, time[0], time[1]);
-    }
-
     @Path("GenerateBatchLoad")
     @Consumes()
     @POST

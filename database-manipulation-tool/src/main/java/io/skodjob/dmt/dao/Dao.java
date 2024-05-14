@@ -55,8 +55,6 @@ public interface Dao {
 
     void executeStatement(String statement);
 
-    void executePreparedStatement(String statement);
-
     void executeBatchStatement(List<String> statements);
 
     Instant timedInsert(DatabaseEntry databaseEntry);

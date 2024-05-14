@@ -114,23 +114,11 @@ public abstract class AbstractBasicDao implements Dao {
     }
 
     @Override
-    public void executePreparedStatement(String statement) {
-        try (Connection conn = source.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(statement)) {
-            stmt.executeUpdate();
-        }
-        catch (SQLException ex) {
-            LOG.error("Could not execute statement " + statement);
-            LOG.error(ex.getMessage());
-        }
-    }
-
-    @Override
     public void executeBatchStatement(List<String> statements) {
         try (Connection conn = source.getConnection();
              Statement stmt = conn.createStatement()) {
-            for (int i = 0; i < statements.size(); i++) {
-                stmt.addBatch(statements.get(i));
+            for (String statement : statements) {
+                stmt.addBatch(statement);
             }
             int[] results = stmt.executeBatch();
             int i = 0;

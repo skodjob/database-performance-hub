@@ -66,7 +66,7 @@ public class RedisResource {
     }
 
     @Path("pollMessages")
-    @GET
+    @POST
     public Response pollMessages(@QueryParam("max") Integer max, List<String> channels) {
         List<Map.Entry<String, List<StreamEntry>>> res = redisService.get(max, channels);
         return Response.ok(res).build();

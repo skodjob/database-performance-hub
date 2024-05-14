@@ -96,7 +96,7 @@ You can reset all databases on DMT start with property `onstart.reset.database`.
 <summary><code>POST</code> <code><b>/Main/GenerateBatchLoad?count={count}&maxRows={maxRows}</b></code> <code>(Same as GenerateLoad but uses batch statements for better performance)</code></summary>
 <br />
 <summary>
-    <code>GET</code> 
+    <code>POST</code> 
     <code><b>/Redis/pollMessages?max=5</b></code> 
     <code>
         [
@@ -107,7 +107,7 @@ You can reset all databases on DMT start with property `onstart.reset.database`.
     <code>Reads at most 'max' messages from specified channels</code>
 </summary>
 <summary>
-    <code>GET</code> 
+    <code>POST</code> 
     <code><b>/Redis/sendMessage?channel=channel1</b></code> 
     <code>
         {

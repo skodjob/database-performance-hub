@@ -33,6 +33,7 @@ package io.skodjob.dmt.resource;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 import io.skodjob.dmt.service.RedisService;
@@ -66,10 +67,20 @@ public class RedisResource {
     }
 
     @Path("pollMessages")
-    @GET
+    @POST
     public Response pollMessages(@QueryParam("max") Integer max, List<String> channels) {
         List<Map.Entry<String, List<StreamEntry>>> res = redisService.get(max, channels);
         return Response.ok(res).build();
+    }
+
+    @Path("readHash")
+    @GET
+    public Response readHash(@QueryParam("hashKey") String hashKey) {
+        Map<String, String> map = redisService.readHash(hashKey);
+        if (Objects.isNull(map)) {
+            return Response.serverError().build();
+        }
+        return Response.ok(map).build();
     }
 
     @Path("reset")

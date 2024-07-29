@@ -52,6 +52,10 @@ public class RedisService {
         return redisDataSource.pollMessages(amount, channels);
     }
 
+    public Map<String, String> readHash(String hashKey) {
+        return redisDataSource.readHash(hashKey);
+    }
+
     public void resetRedis() {
         redisDataSource.flushRedis();
     }
